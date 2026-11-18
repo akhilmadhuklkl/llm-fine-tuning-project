@@ -1,0 +1,11 @@
+# Base model selected for the first experiment.
+model_id: Qwen/Qwen2.5-1.5B-Instruct
+model_revision: main
+trust_remote_code: false
+torch_dtype: auto
+device_map: auto
+use_cache: false
+
+# Target task is structured incident triage.
+task: it_incident_triage
+output_format: json

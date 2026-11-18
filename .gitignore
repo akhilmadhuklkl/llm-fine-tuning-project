@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Model and experiment artifacts
+models/*
+checkpoints/
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.ckpt
+wandb/
+mlruns/
+logs/
+
+# Local data that may contain sensitive information
+data/raw/*
+data/processed/*
+data/splits/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/splits/.gitkeep
+
+# Notebooks and OS files
+.ipynb_checkpoints/
+.DS_Store
+Thumbs.db

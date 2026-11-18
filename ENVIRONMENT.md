@@ -15,6 +15,8 @@ The project virtual environment currently has a CPU-only PyTorch wheel (`2.15.0+
 
 On 18 November 2026, an attempted installation of the official Windows CUDA 12.8 wheel (`torch==2.11.0`) stalled while downloading its approximately 2.7 GB package. The CPU environment remains intact. We will not retry it for the minimum-resource workflow unless CPU experiments prove insufficient.
 
+The Qwen2.5-0.5B baseline download was also attempted but stalled after downloading only approximately 11 MB of metadata and tokenizer files. The incomplete cache was removed. The baseline script remains ready to retry when Hugging Face connectivity is stable.
+
 ## Setup
 
 Create and activate a virtual environment from the project root:

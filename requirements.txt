@@ -1,0 +1,20 @@
+# Core ML stack
+torch>=2.6
+transformers>=4.46
+datasets>=3.0
+tokenizers>=0.20
+
+# Fine-tuning
+peft>=0.13
+trl>=0.12
+accelerate>=1.0
+
+# Evaluation and data work
+evaluate>=0.4
+pandas>=2.2
+scikit-learn>=1.5
+
+# Development
+jupyterlab>=4.2
+python-dotenv>=1.0
+pyyaml>=6.0

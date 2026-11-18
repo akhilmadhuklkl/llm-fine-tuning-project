@@ -13,7 +13,7 @@ The initial environment check was performed on 18 November 2026.
 
 The project virtual environment currently has a CPU-only PyTorch wheel (`2.15.0+cpu`). The NVIDIA GPU is visible to the operating system, but PyTorch reports `CUDA available: False`. This is acceptable for data preparation and code validation; before full fine-tuning, we should install and verify a CUDA-enabled PyTorch build or use cloud GPU compute.
 
-On 18 November 2026, an attempted installation of the official Windows CUDA 12.8 wheel (`torch==2.11.0`) stalled while downloading its approximately 2.7 GB package. The CPU environment remains intact. Retry this download only when a stable connection and sufficient disk space are available.
+On 18 November 2026, an attempted installation of the official Windows CUDA 12.8 wheel (`torch==2.11.0`) stalled while downloading its approximately 2.7 GB package. The CPU environment remains intact. We will not retry it for the minimum-resource workflow unless CPU experiments prove insufficient.
 
 ## Setup
 

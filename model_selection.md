@@ -2,13 +2,13 @@
 
 ## Selected model
 
-**Qwen/Qwen2.5-1.5B-Instruct**
+**Qwen/Qwen2.5-0.5B-Instruct**
 
-Model page: <https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct>
+Model page: <https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct>
 
 ## Why this model
 
-The project needs a model that can follow instructions and produce reliable structured output for incident triage. Qwen2.5-1.5B-Instruct is the first checkpoint because its official model card describes improvements in instruction following, structured-data understanding, and JSON generation. The 1.5B size also keeps local experiments realistic for the available 6 GB GPU once CUDA-enabled PyTorch is configured.
+The project needs a model that can follow instructions and produce structured output for incident triage while keeping local resource use low. Qwen2.5-0.5B-Instruct is the minimum practical starting checkpoint: it is substantially smaller than the 1.5B variant while retaining instruction-tuning and the Qwen2.5 family’s structured-output capabilities.
 
 ## License
 
@@ -29,4 +29,4 @@ Model page: <https://huggingface.co/HuggingFaceTB/SmolLM2-1.7B-Instruct>
 
 ## Decision
 
-Use Qwen2.5-1.5B-Instruct for the baseline and first fine-tuning experiment. Do not download or fine-tune the fallback unless the selected model fails a documented compatibility or quality check.
+Use Qwen2.5-0.5B-Instruct for the baseline and first fine-tuning experiment. Do not download the 1.5B model or the fallback unless the selected model fails a documented compatibility or quality check.

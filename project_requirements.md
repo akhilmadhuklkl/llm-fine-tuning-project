@@ -2,54 +2,61 @@
 
 ## 1. Project title
 
-Customer Support LLM Fine-Tuning Project
+IT Incident Triage and Runbook Assistant
 
 ## 2. Problem statement
 
-General-purpose language models can answer customer questions, but they may use the wrong tone, provide inconsistent answers, or invent policy details. This project will customize an open-source instruction-following LLM for customer-support conversations.
+Engineering teams receive incident reports in inconsistent formats and must quickly determine severity, affected systems, likely causes, and the next diagnostic steps. A general-purpose language model may produce inconsistent triage decisions or suggest unsafe actions.
 
-The model will learn to produce concise, professional, policy-aware responses from curated examples. Deployment is outside the scope of this stage and will be handled later.
+This project will customize an open-source instruction-following LLM for internal incident triage. The model will transform incident descriptions into structured triage information and recommend safe, documented next steps. It will support engineers, but it will not autonomously execute infrastructure changes.
+
+Deployment is outside the scope of this stage and will be handled later.
 
 ## 3. Intended users
 
-- Customer-support agents who need draft responses
-- Customers asking common product and order questions
-- AI engineers evaluating domain-specific model customization
+- Site reliability engineers
+- Platform and DevOps engineers
+- Software engineers responding to incidents
+- Engineering managers reviewing incident status
 
 ## 4. Intended use cases
 
 The model should help with:
 
-- Product and service questions
-- Shipping and delivery questions
-- Return and refund questions
-- Account and order-support questions
-- Complaints and emotionally charged messages
-- Requests that require escalation to a human agent
+- Classifying incident type and severity
+- Extracting affected services, symptoms, and timestamps
+- Identifying missing information in an incident report
+- Recommending the next diagnostic steps
+- Selecting a relevant runbook section
+- Drafting concise internal incident updates
+- Identifying when an incident should be escalated
+- Summarizing a resolved incident for later review
 
 ## 5. Expected behavior
 
 The assistant should:
 
-- Answer using clear, polite, professional language
-- Give direct answers when the required information is available
-- Ask for missing information when necessary
-- Clearly state uncertainty instead of guessing
-- Follow the support policy represented in the training data
-- Protect customer privacy
-- Escalate cases that require human judgment
-- Keep responses concise unless the user needs more explanation
+- Produce consistent structured triage output
+- Separate observed facts from hypotheses
+- State uncertainty clearly
+- Ask for missing information before making strong recommendations
+- Recommend reversible and low-risk diagnostic actions first
+- Reference the relevant runbook or procedure when available
+- Assign severity using documented criteria
+- Escalate incidents that exceed its confidence or authority
+- Use concise, professional engineering language
 
 ## 6. Out-of-scope behavior
 
 The assistant should not:
 
-- Invent company policies, prices, delivery dates, or guarantees
-- Expose personal or confidential customer information
-- Make legal, medical, or financial decisions
-- Approve exceptions that require human authorization
-- Pretend that it completed an action it cannot perform
-- Answer unsupported questions as if they were certain
+- Execute commands or modify infrastructure
+- Restart services, delete data, or change production configuration
+- Claim that it inspected logs or systems when it did not
+- Invent metrics, alerts, dependencies, or runbook steps
+- Override an engineer’s incident-severity decision
+- Expose secrets, credentials, tokens, or private customer data
+- Treat an uncertain hypothesis as a confirmed root cause
 
 ## 7. Initial technical approach
 
@@ -57,33 +64,49 @@ The assistant should not:
 - Establish a baseline using the original model
 - Use supervised fine-tuning (SFT)
 - Use LoRA or QLoRA to reduce training requirements
-- Keep the final model checkpoint and adapter versioned by experiment
+- Train on sanitized incident examples and approved runbook responses
 - Evaluate against both the original model and a prompt-only baseline
+- Keep model checkpoints and adapters versioned by experiment
 
 ## 8. Dataset requirements
 
-Training examples should contain a user message and an approved assistant response. Examples should cover normal, difficult, ambiguous, out-of-scope, privacy-sensitive, and escalation scenarios.
+Training examples should contain an incident report or engineering request and an approved assistant response. Where useful, responses should include structured fields such as:
+
+```json
+{
+  "severity": "SEV-2",
+  "incident_type": "database_latency",
+  "affected_services": ["orders-api"],
+  "observed_facts": ["p95 latency increased"],
+  "hypotheses": ["database connection saturation"],
+  "next_steps": ["check connection pool utilization"],
+  "escalation_required": true
+}
+```
+
+Examples should cover normal, difficult, ambiguous, incomplete, and high-severity incidents. They should include cases where the correct behavior is to request more information or escalate.
 
 Every example must be:
 
-- Correct and relevant
-- Free of real personal information
-- Consistent with the selected support policy
-- Assigned to a useful category
+- Technically correct and relevant
+- Sanitized of credentials, secrets, and private identifiers
+- Consistent with the fictional or approved operational policy
+- Assigned to a useful incident category
 - Valid according to the project dataset schema
 
 The dataset will be split into training, validation, and test sets. Test examples must not be used during training.
 
 ## 9. Success criteria
 
-The fine-tuned model will be considered successful when it demonstrates measurable improvement over the baseline on the target support task, including:
+The fine-tuned model will be considered successful when it demonstrates measurable improvement over the baseline on the target incident-triage task, including:
 
-- Correctness on common support questions
-- Appropriate uncertainty and escalation behavior
-- Consistent professional tone
-- Reduced hallucination of unsupported policies
-- Reliable handling of difficult and out-of-scope questions
-- Valid output format for the planned inference interface
+- Accurate severity classification
+- Reliable extraction of affected services and observed facts
+- Clear separation of facts and hypotheses
+- Useful and safe next-step recommendations
+- Correct escalation behavior
+- Consistent structured output
+- Reduced hallucination of infrastructure details
 
 Exact numeric thresholds will be finalized after the baseline evaluation and initial dataset review.
 
@@ -91,11 +114,12 @@ Exact numeric thresholds will be finalized after the baseline evaluation and ini
 
 Evaluation will combine:
 
-- Automated task-appropriate metrics
+- Automated classification and field-extraction metrics
+- JSON/schema validity checks
 - Human review using a documented rubric
 - Side-by-side comparison with the base model
 - Failure analysis by error category
-- Safety and privacy tests
+- Safety tests for destructive or unauthorized actions
 
 Evaluation results must be reproducible from a recorded model version, dataset version, and configuration.
 
@@ -104,7 +128,8 @@ Evaluation results must be reproducible from a recorded model version, dataset v
 Included:
 
 - Requirements definition
-- Dataset creation and preparation
+- Synthetic and sanitized incident-dataset creation
+- Dataset preparation and validation
 - Base-model selection
 - Baseline evaluation
 - Fine-tuning experiments
@@ -114,6 +139,8 @@ Included:
 Deferred:
 
 - Production deployment
+- Connection to live monitoring or ticketing systems
+- Automatic command execution
 - Public API
 - User interface
 - Authentication and authorization
@@ -121,4 +148,4 @@ Deferred:
 
 ## 12. Assumption to validate
 
-This project currently assumes a generic online-store customer-support scenario. Before dataset creation, we will define the specific fictional support policy and domain vocabulary so that the examples remain consistent and do not depend on private company data.
+This project currently assumes a fictional software platform with documented services, severity criteria, and runbook procedures. Before dataset creation, we will define that fictional platform so examples remain consistent and do not depend on private production data.

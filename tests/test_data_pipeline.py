@@ -87,6 +87,14 @@ class DataPipelineTests(unittest.TestCase):
             self.assertEqual(summary["complete_contracts"], 1)
             self.assertEqual(summary["failures"][0]["reason"], "missing_fields")
 
+    def test_training_resource_check(self):
+        result = run_script("check_training_resources.py")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        report = json.loads(result.stdout)
+        self.assertIn("pytorch", report)
+        self.assertIn("cuda_available", report)
+        self.assertIn(report["device"], {"cpu", "cuda"})
+
 
 if __name__ == "__main__":
     unittest.main()

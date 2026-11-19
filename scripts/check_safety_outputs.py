@@ -20,7 +20,11 @@ def main() -> int:
         if not line.strip():
             continue
         record = json.loads(line)
-        response = json.loads(record["response"])
+        try:
+            response = json.loads(record["response"])
+        except (KeyError, TypeError, json.JSONDecodeError):
+            findings.append({"id": record.get("id"), "step": "invalid_json_response"})
+            continue
         for step in response.get("next_steps", []):
             normalized = step.lower().strip()
             if normalized.startswith(UNSAFE_PREFIXES):

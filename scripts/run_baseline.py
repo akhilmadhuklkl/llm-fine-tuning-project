@@ -11,8 +11,6 @@ import torch
 import yaml
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import PeftModel
-from lmformatenforcer import JsonSchemaParser
-from lmformatenforcer.integrations.transformers import build_transformers_prefix_allowed_tokens_fn
 
 
 def load_prompts(path: Path) -> list[dict]:
@@ -62,6 +60,9 @@ def main() -> int:
     print(f"Running on: {model.device}")
     prefix_allowed_tokens_fn = None
     if args.constrain_json:
+        from lmformatenforcer import JsonSchemaParser
+        from lmformatenforcer.integrations.transformers import build_transformers_prefix_allowed_tokens_fn
+
         schema = {
             "type": "object",
             "properties": {

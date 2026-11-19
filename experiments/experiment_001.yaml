@@ -1,0 +1,60 @@
+experiment: experiment_001
+created_at_utc: '2026-11-19T12:39:11.433155+00:00'
+git_commit: 5413236a6c724b3d07108eaffc0e6f7cd3cfaac4
+git_branch: main
+platform: Windows-11-10.0.26300-SP0
+python: 3.14.4
+files:
+  data/sample_incidents.jsonl:
+    sha256: d04c1a5394a3e7975913321f98e55e456ee98d92143621838f64ad4f8a9bf7d9
+    bytes: 23343
+  data/splits/train.jsonl:
+    sha256: cd401acdf957029c3842b9ab3acb446f7be5ed65e9ee01228239127837f41959
+    bytes: 14832
+  data/splits/validation.jsonl:
+    sha256: 16a14127f57dbe8cd127fb719e990e8935a6f25c3165c4826d6cbd5a4986d2ac
+    bytes: 4807
+  data/splits/test.jsonl:
+    sha256: 8213c61c1ace3a4f78c62878fe17c9770574907600db6a8eb0b868e4c6e123da
+    bytes: 4618
+  configs/model.yaml:
+    sha256: ea0418546d34a0bb18524498bf47827303826354d37c513c4f80dc1944752ee2
+    bytes: 283
+  configs/training.yaml:
+    sha256: c44390692a66258634dd89543a8811ab6fa9e12ffd27dc640b4ef774c366815f
+    bytes: 604
+model_config:
+  model_id: HuggingFaceTB/SmolLM2-135M-Instruct
+  model_revision: main
+  trust_remote_code: false
+  torch_dtype: auto
+  device_map: auto
+  use_cache: false
+  task: it_incident_triage
+  output_format: json
+training_config:
+  model_config: configs/model.yaml
+  train_file: data/processed/train_chat.jsonl
+  validation_file: data/processed/validation_chat.jsonl
+  output_dir: models/smoke-test
+  max_seq_length: 256
+  per_device_train_batch_size: 1
+  per_device_eval_batch_size: 1
+  gradient_accumulation_steps: 4
+  learning_rate: 0.0002
+  num_train_epochs: 1
+  max_steps: 1
+  logging_steps: 1
+  save_strategy: 'no'
+  evaluation_strategy: 'no'
+  fp16: false
+  bf16: false
+  gradient_checkpointing: false
+  lora_r: 8
+  lora_alpha: 16
+  lora_dropout: 0.05
+  lora_target_modules:
+  - q_proj
+  - k_proj
+  - v_proj
+  - o_proj

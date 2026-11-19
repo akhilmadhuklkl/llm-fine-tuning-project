@@ -1,0 +1,60 @@
+"""Apply transparent, input-text-based taxonomy normalization to model JSON outputs."""
+
+from __future__ import annotations
+
+import argparse
+import json
+from pathlib import Path
+
+
+def classify_text(text: str) -> tuple[str | None, str | None]:
+    lowered = text.lower()
+    if "429" in lowered or "rate limit" in lowered or "quota" in lowered:
+        return "rate_limit", "SEV-3"
+    if "queue" in lowered or "throughput" in lowered or "delivery delay" in lowered:
+        return "queue_backlog", "SEV-2"
+    if "duplicate" in lowered or "missing rows" in lowered or "data integrity" in lowered:
+        return "data_integrity", "SEV-2"
+    return None, None
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("predictions")
+    parser.add_argument("prompts")
+    parser.add_argument("--output", required=True)
+    args = parser.parse_args()
+
+    prompts = {
+        record["id"]: " ".join(message["content"] for message in record["messages"])
+        for record in (json.loads(line) for line in Path(args.prompts).read_text(encoding="utf-8").splitlines())
+        if record.get("messages")
+    }
+    changed = 0
+    output_records = []
+    for line in Path(args.predictions).read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        record = json.loads(line)
+        try:
+            parsed = json.loads(record["response"])
+        except json.JSONDecodeError:
+            output_records.append(record)
+            continue
+        incident_type, severity = classify_text(prompts.get(record["id"], ""))
+        if incident_type and (parsed.get("incident_type") != incident_type or parsed.get("severity") != severity):
+            parsed["incident_type"] = incident_type
+            parsed["severity"] = severity
+            record["response"] = json.dumps(parsed, ensure_ascii=False, separators=(",", ":"))
+            record["normalization"] = "text_keyword_taxonomy_v1"
+            changed += 1
+        output_records.append(record)
+    output = Path(args.output)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text("".join(json.dumps(record, ensure_ascii=False) + "\n" for record in output_records), encoding="utf-8")
+    print(f"Normalized records: {changed}/{len(output_records)}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

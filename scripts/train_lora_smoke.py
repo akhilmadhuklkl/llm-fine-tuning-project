@@ -10,7 +10,7 @@ import torch
 import yaml
 from peft import LoraConfig, TaskType, get_peft_model
 from torch.utils.data import Dataset
-from transformers import AutoModelForCausalLM, AutoTokenizer, Trainer, TrainingArguments
+from transformers import AutoModelForCausalLM, AutoTokenizer
 
 
 class ChatDataset(Dataset):
@@ -58,22 +58,23 @@ def main() -> int:
     model.print_trainable_parameters()
 
     train_dataset = ChatDataset(Path(config["train_file"]), tokenizer, config["max_seq_length"])
-    training_args = TrainingArguments(
-        output_dir=config["output_dir"],
-        per_device_train_batch_size=config["per_device_train_batch_size"],
-        gradient_accumulation_steps=config["gradient_accumulation_steps"],
-        learning_rate=config["learning_rate"],
-        num_train_epochs=config["num_train_epochs"],
-        max_steps=config["max_steps"],
-        logging_steps=config["logging_steps"],
-        save_strategy=config["save_strategy"],
-        report_to="none",
-        fp16=config["fp16"],
-        bf16=config["bf16"],
-        gradient_checkpointing=config["gradient_checkpointing"],
-    )
-    trainer = Trainer(model=model, args=training_args, train_dataset=train_dataset)
-    trainer.train()
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model.to(device)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=config["learning_rate"])
+    model.train()
+    for step, batch in enumerate(train_dataset):
+        if step >= config["max_steps"]:
+            break
+        batch = {key: value.unsqueeze(0).to(device) for key, value in batch.items()}
+        outputs = model(**batch)
+        loss = outputs.loss / config["gradient_accumulation_steps"]
+        loss.backward()
+        if (step + 1) % config["gradient_accumulation_steps"] == 0 or step + 1 == config["max_steps"]:
+            optimizer.step()
+            optimizer.zero_grad()
+        print(f"step={step + 1} loss={loss.item():.4f} device={device}")
+    Path(config["output_dir"]).mkdir(parents=True, exist_ok=True)
+    model.save_pretrained(config["output_dir"])
     print("LoRA smoke test completed.")
     return 0
 

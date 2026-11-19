@@ -29,3 +29,6 @@ jobs:
 
       - name: Check tracked prediction contract report
         run: python scripts/check_prediction_format.py evaluation/exp001_final_predictions.jsonl --output $RUNNER_TEMP/prediction_format_report.json
+
+      - name: Run hybrid safety gate
+        run: python scripts/run_hybrid_pipeline.py evaluation/exp005_predictions.jsonl data/splits/test.jsonl --output-dir $RUNNER_TEMP/hybrid_evaluation

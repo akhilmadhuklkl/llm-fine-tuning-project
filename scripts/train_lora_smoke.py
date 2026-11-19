@@ -59,7 +59,7 @@ def main() -> int:
         )
     model_config = yaml.safe_load(Path(config["model_config"]).read_text(encoding="utf-8"))
     model_id = model_config["model_id"]
-    tokenizer = AutoTokenizer.from_pretrained(model_id)
+    tokenizer = AutoTokenizer.from_pretrained(model_id, extra_special_tokens={})
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 

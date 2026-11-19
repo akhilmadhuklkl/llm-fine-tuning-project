@@ -14,7 +14,14 @@ SYSTEM_MESSAGE = (
     "Use exactly these keys: severity, incident_type, affected_services, "
     "observed_facts, hypotheses, next_steps, escalation_required. "
     "severity must be SEV-0, SEV-1, SEV-2, SEV-3, none, or unknown; "
-    "the four list fields must contain strings; escalation_required must be boolean."
+    "the four list fields must contain strings; escalation_required must be boolean. "
+    "Use incident_type values from this taxonomy when applicable: "
+    "cache_failure, certificate_expiry, data_integrity, database_latency, "
+    "dependency_timeout, deployment_failure, healthy_system, missing_information, "
+    "monitoring_false_positive, queue_backlog, rate_limit, regional_outage, "
+    "security_sensitive, service_degradation. "
+    "Use SEV-1 for security-sensitive incidents, SEV-2 for material service or data impact, "
+    "SEV-3 for limited impact, and none for healthy systems."
 )
 
 

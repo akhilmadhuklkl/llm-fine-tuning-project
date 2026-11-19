@@ -1,7 +1,7 @@
 model_config: configs/model_qwen_local.yaml
 train_file: data/processed/train_chat.jsonl
 validation_file: data/processed/validation_chat.jsonl
-output_dir: models/qwen2.5-0.5b-lora-exp004
+output_dir: models/qwen2.5-0.5b-lora-exp005
 max_seq_length: 256
 assistant_only_loss: true
 per_device_train_batch_size: 1

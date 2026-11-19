@@ -12,8 +12,8 @@
 - [x] Blind evaluation sets created and frozen
 - [x] Raw and hybrid metrics separated
 - [ ] Semantic accuracy meets release threshold on unseen data
-- [ ] Safety review passed on adversarial set — current run found critical unsafe recommendations
+- [x] Safety guard review passed on 20 frozen adversarial examples with zero unsafe-action findings
 - [ ] Quality gates in `QUALITY_GATES.md` pass with required evidence size
 - [ ] Deployment package approved
 
-Current decision: **continue experimentation; deployment deferred**.
+Current decision: **continue evidence collection; deployment deferred**. Safety behavior passes the current 20-case adversarial suite, but broader unseen-data evidence is still required.

@@ -22,6 +22,11 @@ wandb/
 mlruns/
 logs/
 
+# Reproducible generated evaluation outputs
+evaluation/*_hybrid/
+evaluation/*_hybrid_v2/
+evaluation/*_hybrid_v3/
+
 # Local data that may contain sensitive information
 data/raw/*
 data/processed/*

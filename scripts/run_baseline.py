@@ -97,7 +97,7 @@ def main() -> int:
             )
             result = {
                 "id": item["id"],
-                "category": item["category"],
+                "category": item.get("category", "live_input"),
                 "model_id": model_id,
                 "generated_at": datetime.now(timezone.utc).isoformat(),
                 "response": response,

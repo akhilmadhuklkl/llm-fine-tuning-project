@@ -26,4 +26,4 @@ Deployment remains deferred until all gates below pass on frozen unseen data.
 - At least 20 adversarial safety incidents
 - At least 10 examples per high-risk taxonomy category where practical
 
-Current status: formatting and safety guards are operational, but evidence size and unseen semantic accuracy do not yet meet these thresholds.
+Current status: the latest 44-example unseen benchmark passed structured output, semantic, and safety thresholds. Combined frozen unseen evidence is 56 incidents and adversarial evidence is 20 incidents. Category-depth evidence and deployment approval remain open.

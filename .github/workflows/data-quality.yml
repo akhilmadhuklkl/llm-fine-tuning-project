@@ -1,4 +1,4 @@
-name: Data quality
+name: Data quality and regression
 
 on:
   push:
@@ -26,3 +26,6 @@ jobs:
 
       - name: Run unified quality gate
         run: python scripts/run_quality_gate.py
+
+      - name: Check tracked prediction contract report
+        run: python scripts/check_prediction_format.py evaluation/exp001_final_predictions.jsonl --output $RUNNER_TEMP/prediction_format_report.json

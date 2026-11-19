@@ -37,7 +37,7 @@ def parse_response(response: str) -> dict | None:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("predictions", help="JSONL with id and response fields")
-    parser.add_argument("--references", default="data/sample_incidents.jsonl")
+    parser.add_argument("--references", default="data/splits/test.jsonl")
     parser.add_argument("--output", default="evaluation/metrics.json")
     args = parser.parse_args()
 

@@ -1,0 +1,9 @@
+# Local copy of the selected SmolLM2 checkpoint for baseline execution.
+model_id: models/smollm2-135m
+model_revision: local-download
+trust_remote_code: false
+torch_dtype: auto
+device_map: auto
+use_cache: false
+task: it_incident_triage
+output_format: json

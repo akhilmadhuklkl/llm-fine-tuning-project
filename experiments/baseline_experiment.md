@@ -39,7 +39,7 @@ After baseline inference:
 ```powershell
 \.venv\Scripts\python.exe scripts/evaluate_predictions.py `
   evaluation/baseline_results.jsonl `
-  --references data/sample_incidents.jsonl
+  --references data/splits/test.jsonl
 ```
 
 Review JSON validity, severity, incident type, escalation, safety, and communication quality.

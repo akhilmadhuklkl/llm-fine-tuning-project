@@ -98,20 +98,23 @@ def main() -> int:
         if (step + 1) % config["gradient_accumulation_steps"] == 0 or step + 1 == config["max_steps"]:
             optimizer.step()
             optimizer.zero_grad()
-        model.eval()
-        with torch.no_grad():
-            validation_losses = []
-            for validation_batch in validation_dataset:
-                validation_batch = {
-                    key: value.unsqueeze(0).to(device) for key, value in validation_batch.items()
-                }
-                validation_losses.append(model(**validation_batch).loss.item())
-        validation_loss = sum(validation_losses) / len(validation_losses)
-        model.train()
+        eval_interval = config.get("eval_every_n_steps", config["max_steps"])
+        validation_loss = None
+        if (step + 1) % eval_interval == 0 or step + 1 == config["max_steps"]:
+            model.eval()
+            with torch.no_grad():
+                validation_losses = []
+                for validation_batch in validation_dataset:
+                    validation_batch = {
+                        key: value.unsqueeze(0).to(device) for key, value in validation_batch.items()
+                    }
+                    validation_losses.append(model(**validation_batch).loss.item())
+            validation_loss = sum(validation_losses) / len(validation_losses)
+            model.train()
         history.append({"step": step + 1, "train_loss": loss.item(), "validation_loss": validation_loss})
         print(
             f"step={step + 1} train_loss={loss.item():.4f} "
-            f"validation_loss={validation_loss:.4f} device={device}"
+            f"validation_loss={validation_loss if validation_loss is not None else 'skipped'} device={device}"
         )
     Path(config["output_dir"]).mkdir(parents=True, exist_ok=True)
     model.save_pretrained(config["output_dir"])

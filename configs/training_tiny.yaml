@@ -9,6 +9,7 @@ gradient_accumulation_steps: 1
 learning_rate: 0.0002
 num_train_epochs: 1
 max_steps: 1
+eval_every_n_steps: 1
 logging_steps: 1
 save_strategy: "no"
 evaluation_strategy: "no"

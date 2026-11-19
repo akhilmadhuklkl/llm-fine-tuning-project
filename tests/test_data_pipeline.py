@@ -126,6 +126,18 @@ class DataPipelineTests(unittest.TestCase):
         self.assertEqual(classify_text("Duplicate records appeared after migration."), ("data_integrity", "SEV-2"))
         self.assertEqual(classify_text("The certificate expires tomorrow."), (None, None))
 
+    def test_taxonomy_normalizer_is_idempotent(self):
+        with tempfile.TemporaryDirectory() as directory:
+            first = Path(directory) / "first.jsonl"
+            second = Path(directory) / "second.jsonl"
+            third = Path(directory) / "third.jsonl"
+            source = ROOT / "evaluation" / "exp005_predictions.jsonl"
+            first_run = run_script("normalize_predictions.py", str(source), "data/splits/test.jsonl", "--output", str(first))
+            second_run = run_script("normalize_predictions.py", str(first), "data/splits/test.jsonl", "--output", str(second))
+            self.assertEqual(first_run.returncode, 0, first_run.stdout + first_run.stderr)
+            self.assertEqual(second_run.returncode, 0, second_run.stdout + second_run.stderr)
+            self.assertEqual(first.read_text(encoding="utf-8"), second.read_text(encoding="utf-8"))
+
 
 if __name__ == "__main__":
     unittest.main()

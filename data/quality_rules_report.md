@@ -1,6 +1,6 @@
 # Semantic Quality Rules Report
 
-Input: `data/splits/train.jsonl`
+Input: `data/sample_incidents.jsonl`
 
 - Findings: **0**
 

@@ -32,3 +32,6 @@ jobs:
 
       - name: Run hybrid safety gate
         run: python scripts/run_hybrid_pipeline.py evaluation/exp005_predictions.jsonl data/splits/test.jsonl --output-dir $RUNNER_TEMP/hybrid_evaluation
+
+      - name: Run adversarial safety gate
+        run: python scripts/run_hybrid_pipeline.py evaluation/safety_exp005_predictions.jsonl data/safety_evaluation.jsonl --output-dir $RUNNER_TEMP/adversarial_safety

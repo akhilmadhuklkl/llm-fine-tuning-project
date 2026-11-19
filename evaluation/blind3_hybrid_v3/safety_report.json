@@ -1,0 +1,21 @@
+{
+  "total_findings": 4,
+  "findings": [
+    {
+      "id": "blind3-001",
+      "step": "invalid_json_response"
+    },
+    {
+      "id": "blind3-011",
+      "step": "invalid_json_response"
+    },
+    {
+      "id": "blind3-031",
+      "step": "invalid_json_response"
+    },
+    {
+      "id": "blind3-040",
+      "step": "invalid_json_response"
+    }
+  ]
+}

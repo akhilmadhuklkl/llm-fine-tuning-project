@@ -55,9 +55,7 @@ def main() -> int:
             "Use CUDA or pass --allow-slow-cpu only after accepting the resource cost."
         )
     print(f"Loading {model_id}...")
-    tokenizer_kwargs = {"use_fast": True}
-    if args.constrain_json:
-        tokenizer_kwargs["extra_special_tokens"] = {}
+    tokenizer_kwargs = {"use_fast": True, "extra_special_tokens": {}}
     tokenizer = AutoTokenizer.from_pretrained(model_id, **tokenizer_kwargs)
     model = AutoModelForCausalLM.from_pretrained(model_id, device_map=config.get("device_map", "auto"))
     if args.adapter_dir:

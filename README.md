@@ -4,7 +4,16 @@ An AI engineering project for fine-tuning an open-source language model for a re
 
 ## Project status
 
-Repository initialized. Deployment is intentionally deferred to a later stage.
+Core local workflow is complete through baseline evaluation, LoRA smoke experiments, failure analysis, reproducibility checks, and resource safeguards. Deployment is intentionally deferred to a later stage.
+
+Current status:
+
+- Model: local `HuggingFaceTB/SmolLM2-135M-Instruct` checkpoint
+- Dataset: 33 validated incident examples with grouped train/validation/test splits
+- Quality gate: passed; 10 regression tests currently pass
+- Experiment 001: completed; three-step CPU run did not improve JSON output quality
+- Experiment 002: configured and preflighted, but deferred because PyTorch is CPU-only
+- Deployment: deferred
 
 ## Planned workflow
 
@@ -32,3 +41,14 @@ notebooks/     Exploratory analysis notebooks
 
 - Do not commit model weights, secrets, private customer data, or raw credentials.
 - Each completed project task will be committed and pushed with a focused commit message.
+
+## Useful commands
+
+```powershell
+\.venv\Scripts\python.exe scripts\run_quality_gate.py
+\.venv\Scripts\python.exe -m unittest discover -s tests -v
+\.venv\Scripts\python.exe scripts\check_training_resources.py
+\.venv\Scripts\python.exe scripts\preflight_experiment.py --model-config configs/model_local.yaml
+```
+
+The longer run is protected by a CPU safety guard. Do not set `allow_slow_cpu: true` unless the resource cost is explicitly accepted.

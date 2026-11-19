@@ -9,7 +9,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.normalize_predictions import classify_text
+from scripts.normalize_predictions import classify_text, escalation_from_text
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -130,6 +130,8 @@ class DataPipelineTests(unittest.TestCase):
         self.assertEqual(classify_text("The database CPU is high and latency increased."), ("database_latency", "SEV-2"))
         self.assertEqual(classify_text("The payments API returns HTTP 503 in two regions."), ("service_outage", "SEV-1"))
         self.assertEqual(classify_text("The latest deployment failed health checks in staging."), ("deployment_failure", "SEV-3"))
+        self.assertTrue(escalation_from_text("A password was found in a log."))
+        self.assertFalse(escalation_from_text("The API returns HTTP 429 for one client."))
 
     def test_taxonomy_normalizer_is_idempotent(self):
         with tempfile.TemporaryDirectory() as directory:

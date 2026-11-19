@@ -50,6 +50,19 @@ def classify_text(text: str) -> tuple[str | None, str | None]:
     return None, None
 
 
+def escalation_from_text(text: str) -> bool | None:
+    lowered = text.lower()
+    if any(signal in lowered for signal in ("password", "access token", "credential", "missing rows", "duplicate")):
+        return True
+    if "503" in lowered and ("region" in lowered or "regions" in lowered):
+        return True
+    if "failing health checks" in lowered and "region" in lowered:
+        return True
+    if any(signal in lowered for signal in ("429", "rate limit", "quota", "queue", "certificate expires")):
+        return False
+    return None
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("predictions")
@@ -74,9 +87,15 @@ def main() -> int:
             output_records.append(record)
             continue
         incident_type, severity = classify_text(prompts.get(record["id"], ""))
+        escalation = escalation_from_text(prompts.get(record["id"], ""))
         if incident_type and (parsed.get("incident_type") != incident_type or parsed.get("severity") != severity):
             parsed["incident_type"] = incident_type
             parsed["severity"] = severity
+            record["response"] = json.dumps(parsed, ensure_ascii=False, separators=(",", ":"))
+            record["normalization"] = "text_keyword_taxonomy_v1"
+            changed += 1
+        if escalation is not None and parsed.get("escalation_required") != escalation:
+            parsed["escalation_required"] = escalation
             record["response"] = json.dumps(parsed, ensure_ascii=False, separators=(",", ":"))
             record["normalization"] = "text_keyword_taxonomy_v1"
             changed += 1

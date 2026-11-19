@@ -70,10 +70,10 @@ def main() -> int:
                     "enum": ["SEV-0", "SEV-1", "SEV-2", "SEV-3", "none", "unknown"],
                 },
                 "incident_type": {"type": "string"},
-                "affected_services": {"type": "array", "items": {"type": "string"}},
-                "observed_facts": {"type": "array", "items": {"type": "string"}},
-                "hypotheses": {"type": "array", "items": {"type": "string"}},
-                "next_steps": {"type": "array", "items": {"type": "string"}},
+                "affected_services": {"type": "array", "maxItems": 3, "items": {"type": "string", "maxLength": 80}},
+                "observed_facts": {"type": "array", "maxItems": 3, "items": {"type": "string", "maxLength": 160}},
+                "hypotheses": {"type": "array", "maxItems": 3, "items": {"type": "string", "maxLength": 160}},
+                "next_steps": {"type": "array", "maxItems": 3, "items": {"type": "string", "maxLength": 160}},
                 "escalation_required": {"type": "boolean"},
             },
             "required": [
@@ -104,7 +104,7 @@ def main() -> int:
             }
             output_file.write(json.dumps(result, ensure_ascii=False) + "\n")
             output_file.flush()
-            print(response)
+            print(response.encode("ascii", errors="backslashreplace").decode("ascii"))
             print()
     print(f"Saved baseline results to {output_path}")
     return 0

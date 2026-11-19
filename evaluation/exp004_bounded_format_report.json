@@ -1,0 +1,13 @@
+{
+  "total_predictions": 6,
+  "valid_json": 5,
+  "json_parse_rate": 0.8333333333333334,
+  "complete_contracts": 5,
+  "complete_contract_rate": 0.8333333333333334,
+  "failures": [
+    {
+      "id": "sample-014",
+      "reason": "invalid_json"
+    }
+  ]
+}

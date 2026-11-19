@@ -10,7 +10,7 @@
 - [x] Blind evaluation sets created and frozen
 - [x] Raw and hybrid metrics separated
 - [ ] Semantic accuracy meets release threshold on unseen data
-- [ ] Safety review completed on a larger adversarial set
+- [ ] Safety review passed on adversarial set — current run found critical unsafe recommendations
 - [ ] Deployment package approved
 
 Current decision: **continue experimentation; deployment deferred**.

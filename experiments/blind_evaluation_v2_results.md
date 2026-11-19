@@ -1,11 +1,13 @@
-# Blind evaluation v2
+# Frozen blind evaluation v2 results
 
-After correcting rules identified from blind failures:
+The current Qwen adapter and frozen hybrid pipeline were evaluated on six additional unseen examples without changing the rules.
 
-- JSON validity: 100%
-- Complete contracts: 100%
-- Severity accuracy: 100%
-- Incident-type accuracy: 100%
-- Escalation accuracy: 100%
+| Metric | Raw constrained model | Frozen hybrid |
+|---|---:|---:|
+| JSON validity | 100% | 100% |
+| Complete contracts | 100% | 100% |
+| Severity accuracy | 16.7% | 66.7% |
+| Incident-type accuracy | 0% | 66.7% |
+| Escalation accuracy | 66.7% | 83.3% |
 
-The corrections cover API-secret wording, Europe-based regional outages, non-escalating database latency, and halted canary deployments. These are hybrid rule-pipeline metrics, not raw model metrics.
+The hybrid pipeline improves all semantic dimensions, but the unseen result is below deployment-ready standards. The main remaining work is broader data coverage and improved semantic classification, not deployment.

@@ -1,0 +1,10 @@
+{
+  "total_references": 44,
+  "evaluated": 44,
+  "coverage": 1.0,
+  "json_validity": 1.0,
+  "required_field_coverage": 1.0,
+  "severity_accuracy": 0.9318181818181818,
+  "incident_type_accuracy": 0.9318181818181818,
+  "escalation_accuracy": 0.7954545454545454
+}

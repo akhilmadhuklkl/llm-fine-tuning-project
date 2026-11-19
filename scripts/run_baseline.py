@@ -44,11 +44,17 @@ def main() -> int:
     parser.add_argument("--adapter-dir", default=None, help="Optional local LoRA adapter directory")
     parser.add_argument("--constrain-json", action="store_true", help="Constrain generation to the incident JSON schema")
     parser.add_argument("--allow-slow-cpu", action="store_true", help="Allow more than six prompts on CPU")
+    parser.add_argument("--ids", default=None, help="Optional comma-separated prompt IDs to evaluate")
     args = parser.parse_args()
 
     config = yaml.safe_load(Path(args.model_config).read_text(encoding="utf-8"))
     model_id = config["model_id"]
     prompts = load_prompts(Path(args.prompts))
+    if args.ids:
+        selected_ids = {item.strip() for item in args.ids.split(",") if item.strip()}
+        prompts = [item for item in prompts if item.get("id") in selected_ids]
+        if not prompts:
+            raise ValueError("--ids did not match any prompt IDs")
     if not torch.cuda.is_available() and len(prompts) > 6 and not args.allow_slow_cpu:
         raise RuntimeError(
             f"Large CPU evaluation is blocked for {len(prompts)} prompts. "

@@ -132,6 +132,8 @@ class DataPipelineTests(unittest.TestCase):
         self.assertEqual(classify_text("The latest deployment failed health checks in staging."), ("deployment_failure", "SEV-3"))
         self.assertTrue(escalation_from_text("A password was found in a log."))
         self.assertFalse(escalation_from_text("The API returns HTTP 429 for one client."))
+        self.assertTrue(escalation_from_text("The media API fails health checks in Europe."))
+        self.assertFalse(escalation_from_text("The canary was halted and the stable version serves traffic."))
 
     def test_taxonomy_normalizer_is_idempotent(self):
         with tempfile.TemporaryDirectory() as directory:

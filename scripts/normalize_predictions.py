@@ -9,7 +9,7 @@ from pathlib import Path
 
 def classify_text(text: str) -> tuple[str | None, str | None]:
     lowered = text.lower()
-    if "password" in lowered or "access token" in lowered or "credential" in lowered:
+    if "password" in lowered or "access token" in lowered or "credential" in lowered or "api secret" in lowered:
         return "credential_exposure", "SEV-1"
     if "completed successfully" in lowered and "no alerts" in lowered:
         return "no_incident", "none"
@@ -19,7 +19,7 @@ def classify_text(text: str) -> tuple[str | None, str | None]:
         return "certificate_expiry", "SEV-3"
     if "503" in lowered and ("region" in lowered or "regions" in lowered):
         return "service_outage", "SEV-1"
-    if ("unavailable" in lowered or "failing health checks" in lowered) and ("region" in lowered or "regions" in lowered):
+    if ("unavailable" in lowered or "failing health checks" in lowered) and ("region" in lowered or "regions" in lowered or "europe" in lowered):
         return "regional_outage", "SEV-2"
     if "login" in lowered or "authentication" in lowered:
         return "authentication_issue", "unknown"
@@ -58,6 +58,12 @@ def escalation_from_text(text: str) -> bool | None:
         return True
     if "failing health checks" in lowered and "region" in lowered:
         return True
+    if ("failing health checks" in lowered or "fails health checks" in lowered) and "europe" in lowered:
+        return True
+    if "database" in lowered and ("latency" in lowered or "query" in lowered):
+        return False
+    if "canary" in lowered and ("halted" in lowered or "stable version" in lowered):
+        return False
     if any(signal in lowered for signal in ("429", "rate limit", "quota", "queue", "certificate expires")):
         return False
     return None

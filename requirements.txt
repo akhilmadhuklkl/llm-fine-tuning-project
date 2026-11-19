@@ -1,7 +1,9 @@
 # Core ML stack
 torch>=2.6
 transformers>=4.57.1,<5
-datasets>=3.0
+huggingface-hub>=0.34,<1
+fsspec>=2023.5.0,<=2026.2.0
+datasets>=3.0,<5
 tokenizers>=0.20
 
 # Fine-tuning
@@ -9,6 +11,7 @@ peft>=0.13
 trl>=0.12
 accelerate>=1.0
 lm-format-enforcer>=0.11.3
+protobuf>=5.0
 
 # Evaluation and data work
 evaluate>=0.4

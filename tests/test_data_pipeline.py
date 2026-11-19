@@ -209,6 +209,11 @@ class DataPipelineTests(unittest.TestCase):
             finding_report = json.loads(report.read_text(encoding="utf-8"))
             self.assertEqual(finding_report["total_findings"], 1)
 
+    def test_local_cli_help(self):
+        result = run_script("triage_incident.py", "--help")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("Triage one IT incident locally", result.stdout)
+
 
 if __name__ == "__main__":
     unittest.main()

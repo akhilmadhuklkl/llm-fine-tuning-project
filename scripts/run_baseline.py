@@ -10,6 +10,7 @@ from pathlib import Path
 import torch
 import yaml
 from transformers import AutoModelForCausalLM, AutoTokenizer
+from peft import PeftModel
 
 
 def load_prompts(path: Path) -> list[dict]:
@@ -35,6 +36,7 @@ def main() -> int:
     parser.add_argument("--output", default="evaluation/baseline_results.jsonl")
     parser.add_argument("--max-new-tokens", type=int, default=256)
     parser.add_argument("--model-config", default="configs/model.yaml")
+    parser.add_argument("--adapter-dir", default=None, help="Optional local LoRA adapter directory")
     args = parser.parse_args()
 
     config = yaml.safe_load(Path(args.model_config).read_text(encoding="utf-8"))
@@ -42,6 +44,9 @@ def main() -> int:
     print(f"Loading {model_id}...")
     tokenizer = AutoTokenizer.from_pretrained(model_id)
     model = AutoModelForCausalLM.from_pretrained(model_id, device_map=config.get("device_map", "auto"))
+    if args.adapter_dir:
+        model = PeftModel.from_pretrained(model, args.adapter_dir)
+        print(f"Loaded LoRA adapter: {args.adapter_dir}")
     model.eval()
     print(f"Running on: {model.device}")
 

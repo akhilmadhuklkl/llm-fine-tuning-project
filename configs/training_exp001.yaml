@@ -1,4 +1,4 @@
-# First short real LoRA experiment.
+# First controlled real LoRA experiment; keep the CPU run short.
 model_config: configs/model_local.yaml
 train_file: data/processed/train_chat.jsonl
 validation_file: data/processed/validation_chat.jsonl

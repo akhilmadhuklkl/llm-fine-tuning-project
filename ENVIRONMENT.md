@@ -17,6 +17,8 @@ On 18 November 2026, an attempted installation of the official Windows CUDA 12.8
 
 The Qwen2.5-0.5B baseline download was also attempted but stalled after downloading only approximately 11 MB of metadata and tokenizer files. The incomplete cache was removed. The project now uses SmolLM2-135M-Instruct to minimize download and runtime resource requirements.
 
+A retry using `HF_HUB_DISABLE_XET=1` also stalled before model weights downloaded. The incomplete SmolLM2 cache was removed again. The local tiny-model smoke path remains the verified fallback.
+
 ## Setup
 
 Create and activate a virtual environment from the project root:

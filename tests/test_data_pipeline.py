@@ -164,6 +164,22 @@ class DataPipelineTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             self.assertEqual(len(output.read_text(encoding="utf-8").splitlines()), 6)
 
+    def test_hybrid_pipeline_runner_outputs_reports(self):
+        with tempfile.TemporaryDirectory() as directory:
+            result = run_script(
+                "run_hybrid_pipeline.py",
+                "evaluation/exp005_predictions.jsonl",
+                "data/splits/test.jsonl",
+                "--output-dir",
+                directory,
+            )
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertTrue((Path(directory) / "normalized_predictions.jsonl").exists())
+            metrics = json.loads((Path(directory) / "metrics.json").read_text(encoding="utf-8"))
+            format_report = json.loads((Path(directory) / "format_report.json").read_text(encoding="utf-8"))
+            self.assertEqual(metrics["incident_type_accuracy"], 1.0)
+            self.assertEqual(format_report["complete_contract_rate"], 1.0)
+
 
 if __name__ == "__main__":
     unittest.main()

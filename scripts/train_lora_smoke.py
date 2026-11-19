@@ -77,10 +77,17 @@ def main() -> int:
         config["max_seq_length"],
         assistant_only_loss=config.get("assistant_only_loss", True),
     )
+    validation_dataset = ChatDataset(
+        Path(config["validation_file"]),
+        tokenizer,
+        config["max_seq_length"],
+        assistant_only_loss=config.get("assistant_only_loss", True),
+    )
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
     optimizer = torch.optim.AdamW(model.parameters(), lr=config["learning_rate"])
     model.train()
+    history = []
     for step, batch in enumerate(train_dataset):
         if step >= config["max_steps"]:
             break
@@ -91,9 +98,26 @@ def main() -> int:
         if (step + 1) % config["gradient_accumulation_steps"] == 0 or step + 1 == config["max_steps"]:
             optimizer.step()
             optimizer.zero_grad()
-        print(f"step={step + 1} loss={loss.item():.4f} device={device}")
+        model.eval()
+        with torch.no_grad():
+            validation_losses = []
+            for validation_batch in validation_dataset:
+                validation_batch = {
+                    key: value.unsqueeze(0).to(device) for key, value in validation_batch.items()
+                }
+                validation_losses.append(model(**validation_batch).loss.item())
+        validation_loss = sum(validation_losses) / len(validation_losses)
+        model.train()
+        history.append({"step": step + 1, "train_loss": loss.item(), "validation_loss": validation_loss})
+        print(
+            f"step={step + 1} train_loss={loss.item():.4f} "
+            f"validation_loss={validation_loss:.4f} device={device}"
+        )
     Path(config["output_dir"]).mkdir(parents=True, exist_ok=True)
     model.save_pretrained(config["output_dir"])
+    Path(config["output_dir"], "training_history.json").write_text(
+        json.dumps(history, indent=2) + "\n", encoding="utf-8"
+    )
     print("LoRA smoke test completed.")
     return 0
 

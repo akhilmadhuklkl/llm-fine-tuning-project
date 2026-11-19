@@ -1,5 +1,5 @@
 # Base model selected for the first experiment.
-model_id: Qwen/Qwen2.5-0.5B-Instruct
+model_id: HuggingFaceTB/SmolLM2-135M-Instruct
 model_revision: main
 trust_remote_code: false
 torch_dtype: auto

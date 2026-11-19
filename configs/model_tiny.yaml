@@ -1,0 +1,9 @@
+# Local random model used only to validate the training pipeline.
+model_id: models/tiny-smoke-model
+model_revision: local
+trust_remote_code: false
+torch_dtype: float32
+device_map: null
+use_cache: false
+task: it_incident_triage_smoke_test
+output_format: json

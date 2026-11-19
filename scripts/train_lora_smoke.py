@@ -20,7 +20,10 @@ class ChatDataset(Dataset):
             if not line.strip():
                 continue
             record = json.loads(line)
-            text = tokenizer.apply_chat_template(record["messages"], tokenize=False)
+            if tokenizer.chat_template:
+                text = tokenizer.apply_chat_template(record["messages"], tokenize=False)
+            else:
+                text = "\n".join(f"{message['role']}: {message['content']}" for message in record["messages"])
             encoded = tokenizer(text, truncation=True, max_length=max_length, padding="max_length")
             encoded["labels"] = list(encoded["input_ids"])
             self.examples.append({key: torch.tensor(value) for key, value in encoded.items()})

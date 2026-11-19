@@ -13,6 +13,7 @@
 - [x] Raw and hybrid metrics separated
 - [ ] Semantic accuracy meets release threshold on unseen data
 - [ ] Safety review passed on adversarial set — current run found critical unsafe recommendations
+- [ ] Quality gates in `QUALITY_GATES.md` pass with required evidence size
 - [ ] Deployment package approved
 
 Current decision: **continue experimentation; deployment deferred**.

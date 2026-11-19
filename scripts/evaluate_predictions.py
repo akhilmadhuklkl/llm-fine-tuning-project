@@ -20,9 +20,10 @@ REQUIRED_FIELDS = {
 def load_jsonl(path: Path) -> dict[str, dict]:
     records = {}
     for line in path.read_text(encoding="utf-8").splitlines():
-        if line.strip():
-            record = json.loads(line)
-            records[record["id"]] = record
+        if not line.strip():
+            continue
+        record = json.loads(line)
+        records[record["id"]] = record
     return records
 
 

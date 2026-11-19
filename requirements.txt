@@ -1,6 +1,6 @@
 # Core ML stack
 torch>=2.6
-transformers>=4.46
+transformers>=4.57.1,<5
 datasets>=3.0
 tokenizers>=0.20
 
@@ -8,6 +8,7 @@ tokenizers>=0.20
 peft>=0.13
 trl>=0.12
 accelerate>=1.0
+lm-format-enforcer>=0.11.3
 
 # Evaluation and data work
 evaluate>=0.4

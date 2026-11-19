@@ -11,13 +11,15 @@ import torch
 import yaml
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import PeftModel
+from lmformatenforcer import JsonSchemaParser
+from lmformatenforcer.integrations.transformers import build_transformers_prefix_allowed_tokens_fn
 
 
 def load_prompts(path: Path) -> list[dict]:
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
 
 
-def generate(model, tokenizer, messages: list[dict], max_new_tokens: int) -> str:
+def generate(model, tokenizer, messages: list[dict], max_new_tokens: int, prefix_allowed_tokens_fn=None) -> str:
     if tokenizer.chat_template:
         prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
     else:
@@ -25,7 +27,12 @@ def generate(model, tokenizer, messages: list[dict], max_new_tokens: int) -> str
     inputs = tokenizer(prompt, return_tensors="pt")
     inputs = {key: value.to(model.device) for key, value in inputs.items()}
     with torch.no_grad():
-        output = model.generate(**inputs, max_new_tokens=max_new_tokens, do_sample=False)
+        output = model.generate(
+            **inputs,
+            max_new_tokens=max_new_tokens,
+            do_sample=False,
+            prefix_allowed_tokens_fn=prefix_allowed_tokens_fn,
+        )
     generated = output[0][inputs["input_ids"].shape[1] :]
     return tokenizer.decode(generated, skip_special_tokens=True).strip()
 
@@ -37,18 +44,47 @@ def main() -> int:
     parser.add_argument("--max-new-tokens", type=int, default=256)
     parser.add_argument("--model-config", default="configs/model.yaml")
     parser.add_argument("--adapter-dir", default=None, help="Optional local LoRA adapter directory")
+    parser.add_argument("--constrain-json", action="store_true", help="Constrain generation to the incident JSON schema")
     args = parser.parse_args()
 
     config = yaml.safe_load(Path(args.model_config).read_text(encoding="utf-8"))
     model_id = config["model_id"]
     print(f"Loading {model_id}...")
-    tokenizer = AutoTokenizer.from_pretrained(model_id)
+    tokenizer_kwargs = {"use_fast": True}
+    if args.constrain_json:
+        tokenizer_kwargs["extra_special_tokens"] = {}
+    tokenizer = AutoTokenizer.from_pretrained(model_id, **tokenizer_kwargs)
     model = AutoModelForCausalLM.from_pretrained(model_id, device_map=config.get("device_map", "auto"))
     if args.adapter_dir:
         model = PeftModel.from_pretrained(model, args.adapter_dir)
         print(f"Loaded LoRA adapter: {args.adapter_dir}")
     model.eval()
     print(f"Running on: {model.device}")
+    prefix_allowed_tokens_fn = None
+    if args.constrain_json:
+        schema = {
+            "type": "object",
+            "properties": {
+                "severity": {
+                    "type": "string",
+                    "enum": ["SEV-0", "SEV-1", "SEV-2", "SEV-3", "none", "unknown"],
+                },
+                "incident_type": {"type": "string"},
+                "affected_services": {"type": "array", "items": {"type": "string"}},
+                "observed_facts": {"type": "array", "items": {"type": "string"}},
+                "hypotheses": {"type": "array", "items": {"type": "string"}},
+                "next_steps": {"type": "array", "items": {"type": "string"}},
+                "escalation_required": {"type": "boolean"},
+            },
+            "required": [
+                "severity", "incident_type", "affected_services", "observed_facts",
+                "hypotheses", "next_steps", "escalation_required",
+            ],
+        }
+        prefix_allowed_tokens_fn = build_transformers_prefix_allowed_tokens_fn(
+            tokenizer, JsonSchemaParser(schema)
+        )
+        print("JSON schema constraints: enabled")
 
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -56,7 +92,9 @@ def main() -> int:
     with output_path.open("w", encoding="utf-8") as output_file:
         for item in prompts:
             print(f"Generating {item['id']}...")
-            response = generate(model, tokenizer, item["messages"], args.max_new_tokens)
+            response = generate(
+                model, tokenizer, item["messages"], args.max_new_tokens, prefix_allowed_tokens_fn
+            )
             result = {
                 "id": item["id"],
                 "category": item["category"],

@@ -1,0 +1,21 @@
+{
+  "total_predictions": 6,
+  "valid_json": 3,
+  "json_parse_rate": 0.5,
+  "complete_contracts": 3,
+  "complete_contract_rate": 0.5,
+  "failures": [
+    {
+      "id": "sample-013",
+      "reason": "invalid_json"
+    },
+    {
+      "id": "sample-033",
+      "reason": "invalid_json"
+    },
+    {
+      "id": "sample-023",
+      "reason": "invalid_json"
+    }
+  ]
+}

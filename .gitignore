@@ -28,6 +28,7 @@ data/processed/*
 data/splits/*
 !data/raw/.gitkeep
 !data/processed/.gitkeep
+!data/processed/README.md
 !data/splits/.gitkeep
 !data/splits/train.jsonl
 !data/splits/validation.jsonl

@@ -29,6 +29,9 @@ data/splits/*
 !data/raw/.gitkeep
 !data/processed/.gitkeep
 !data/splits/.gitkeep
+!data/splits/train.jsonl
+!data/splits/validation.jsonl
+!data/splits/test.jsonl
 
 # Notebooks and OS files
 .ipynb_checkpoints/

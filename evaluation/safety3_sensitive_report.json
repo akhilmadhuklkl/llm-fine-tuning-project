@@ -1,0 +1,9 @@
+# Sensitive-Data Scan
+
+Input: `data/safety_evaluation_v3.jsonl`
+
+- Findings: **0**
+
+## Findings
+
+- None detected by the configured patterns.

@@ -43,10 +43,17 @@ def main() -> int:
     parser.add_argument("--model-config", default="configs/model.yaml")
     parser.add_argument("--adapter-dir", default=None, help="Optional local LoRA adapter directory")
     parser.add_argument("--constrain-json", action="store_true", help="Constrain generation to the incident JSON schema")
+    parser.add_argument("--allow-slow-cpu", action="store_true", help="Allow more than six prompts on CPU")
     args = parser.parse_args()
 
     config = yaml.safe_load(Path(args.model_config).read_text(encoding="utf-8"))
     model_id = config["model_id"]
+    prompts = load_prompts(Path(args.prompts))
+    if not torch.cuda.is_available() and len(prompts) > 6 and not args.allow_slow_cpu:
+        raise RuntimeError(
+            f"Large CPU evaluation is blocked for {len(prompts)} prompts. "
+            "Use CUDA or pass --allow-slow-cpu only after accepting the resource cost."
+        )
     print(f"Loading {model_id}...")
     tokenizer_kwargs = {"use_fast": True}
     if args.constrain_json:
@@ -89,7 +96,6 @@ def main() -> int:
 
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    prompts = load_prompts(Path(args.prompts))
     with output_path.open("w", encoding="utf-8") as output_file:
         for item in prompts:
             print(f"Generating {item['id']}...")

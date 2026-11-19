@@ -103,6 +103,16 @@ class DataPipelineTests(unittest.TestCase):
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("Long CPU training is blocked", result.stderr)
 
+    def test_large_cpu_evaluation_is_guarded(self):
+        result = run_script(
+            "run_baseline.py",
+            "--prompts", "data/blind_evaluation_v3.jsonl",
+            "--model-config", "configs/model_qwen_local.yaml",
+        )
+        if not json.loads(run_script("check_training_resources.py").stdout)["cuda_available"]:
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("Large CPU evaluation is blocked", result.stderr)
+
     def test_experiment_manifest_records_selected_configs(self):
         with tempfile.TemporaryDirectory() as directory:
             result = run_script(

@@ -8,8 +8,11 @@ Audit status: **ready for the next accelerated experiment; deployment remains de
 - Duplicate findings: 0 exact groups, 0 near-duplicate pairs
 - Sensitive-data findings: 0
 - Local model and prepared data: available
-- Experiment 002 preflight: passed
-- GPU training: blocked by CPU-only PyTorch in the current environment
+- Experiment 002: completed on GPU; validation loss improved to 2.1089
+- Experiment 005: completed on GPU; JSON contract reached 100% with constrained decoding
+- Hybrid pipeline: 100% JSON, taxonomy, severity, and escalation accuracy on the six-example test set
+- Raw model semantic accuracy: remains weak and is reported separately
+- GPU training: enabled through CUDA PyTorch on RTX 3060
 - Deployment: intentionally deferred
 
-The repository is clean and all current safeguards are passing. The next substantive model task is to run Experiment 002 in an accelerated environment and repeat the unchanged evaluation suite.
+The repository is clean and all current safeguards are passing. The next substantive stage is broader unseen-data validation and deployment review; deployment itself remains deferred.

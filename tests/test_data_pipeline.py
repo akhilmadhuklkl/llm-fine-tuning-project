@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -56,6 +57,35 @@ class DataPipelineTests(unittest.TestCase):
     def test_unified_quality_gate(self):
         result = run_script("run_quality_gate.py")
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_prediction_contract_checker(self):
+        valid = {
+            "id": "valid-1",
+            "response": json.dumps({
+                "severity": "SEV-3",
+                "incident_type": "service_degradation",
+                "affected_services": ["search-api"],
+                "observed_facts": ["latency is high"],
+                "hypotheses": ["dependency is slow"],
+                "next_steps": ["check dependency latency"],
+                "escalation_required": False,
+            }),
+        }
+        invalid = {"id": "invalid-1", "response": '{"severity":"SEV-3"}'}
+        with tempfile.TemporaryDirectory() as directory:
+            predictions = Path(directory) / "predictions.jsonl"
+            report = Path(directory) / "report.json"
+            predictions.write_text(
+                json.dumps(valid) + "\n" + json.dumps(invalid) + "\n", encoding="utf-8"
+            )
+            result = run_script(
+                "check_prediction_format.py", str(predictions), "--output", str(report)
+            )
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            summary = json.loads(report.read_text(encoding="utf-8"))
+            self.assertEqual(summary["valid_json"], 2)
+            self.assertEqual(summary["complete_contracts"], 1)
+            self.assertEqual(summary["failures"][0]["reason"], "missing_fields")
 
 
 if __name__ == "__main__":

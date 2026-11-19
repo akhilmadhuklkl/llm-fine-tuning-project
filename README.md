@@ -49,6 +49,11 @@ notebooks/     Exploratory analysis notebooks
 \.venv\Scripts\python.exe -m unittest discover -s tests -v
 \.venv\Scripts\python.exe scripts\check_training_resources.py
 \.venv\Scripts\python.exe scripts\preflight_experiment.py --model-config configs/model_local.yaml
+\.venv\Scripts\python.exe scripts\run_hybrid_pipeline.py evaluation/exp005_predictions.jsonl data/splits/test.jsonl
 ```
 
 The longer run is protected by a CPU safety guard. Do not set `allow_slow_cpu: true` unless the resource cost is explicitly accepted.
+
+## Evaluation interpretation
+
+Raw fine-tuned-model evaluation and hybrid-pipeline evaluation are reported separately. The raw Qwen adapter reached 100% JSON validity with constrained decoding but had weak taxonomy and severity accuracy. The hybrid pipeline adds explicitly logged taxonomy and escalation rules after generation; its stronger metrics must not be presented as raw model accuracy.

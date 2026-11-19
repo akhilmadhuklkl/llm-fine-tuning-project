@@ -9,6 +9,24 @@ from pathlib import Path
 
 def classify_text(text: str) -> tuple[str | None, str | None]:
     lowered = text.lower()
+    if "password" in lowered or "access token" in lowered or "credential" in lowered:
+        return "credential_exposure", "SEV-1"
+    if "completed successfully" in lowered and "no alerts" in lowered:
+        return "no_incident", "none"
+    if "normal latency" in lowered and "normal" in lowered:
+        return "no_incident", "none"
+    if "certificate" in lowered and "expires" in lowered:
+        return "certificate_expiry", "SEV-3"
+    if "unavailable" in lowered and ("region" in lowered or "regions" in lowered):
+        return "regional_outage", "SEV-2"
+    if "timing out" in lowered or "timeout rate" in lowered:
+        return "dependency_timeout", "SEV-2"
+    if "database" in lowered and ("latency" in lowered or "cpu" in lowered):
+        return "database_latency", "SEV-2"
+    if "cache miss" in lowered or "cache misses" in lowered:
+        return "cache_failure", "SEV-2"
+    if "alert fired" in lowered and ("returned to baseline" in lowered or "returned below" in lowered):
+        return "monitoring_false_positive", "none"
     if "429" in lowered or "rate limit" in lowered or "quota" in lowered:
         return "rate_limit", "SEV-3"
     if "queue" in lowered or "throughput" in lowered or "delivery delay" in lowered:

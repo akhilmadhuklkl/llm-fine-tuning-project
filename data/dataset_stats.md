@@ -12,9 +12,9 @@ Generated from `data/sample_incidents.jsonl`.
 
 ## Split sizes
 
-- `test`: 4
-- `train`: 11
-- `validation`: 4
+- `test`: 3
+- `train`: 13
+- `validation`: 3
 
 ## Categories
 

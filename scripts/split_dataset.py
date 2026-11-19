@@ -1,4 +1,4 @@
-"""Create deterministic train, validation, and test JSONL splits."""
+"""Create deterministic category-grouped train, validation, and test splits."""
 
 from __future__ import annotations
 
@@ -16,20 +16,27 @@ def main() -> int:
     args = parser.parse_args()
 
     records = [json.loads(line) for line in Path(args.input).read_text(encoding="utf-8").splitlines() if line.strip()]
-    random.Random(args.seed).shuffle(records)
+    grouped: dict[str, list[dict]] = {}
+    for record in records:
+        grouped.setdefault(record["category"], []).append(record)
+    categories = list(grouped)
+    random.Random(args.seed).shuffle(categories)
 
-    test_count = max(1, round(len(records) * 0.2))
-    validation_count = max(1, round(len(records) * 0.2))
-    test = records[:test_count]
-    validation = records[test_count : test_count + validation_count]
-    train = records[test_count + validation_count :]
+    test_category_count = max(1, round(len(categories) * 0.2))
+    validation_category_count = max(1, round(len(categories) * 0.2))
+    test_categories = set(categories[:test_category_count])
+    validation_categories = set(categories[test_category_count : test_category_count + validation_category_count])
+    test = [record for category in test_categories for record in grouped[category]]
+    validation = [record for category in validation_categories for record in grouped[category]]
+    train = [record for category in categories if category not in test_categories | validation_categories for record in grouped[category]]
 
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     for name, split in (("train", train), ("validation", validation), ("test", test)):
         path = output_dir / f"{name}.jsonl"
         path.write_text("".join(json.dumps(item, ensure_ascii=False) + "\n" for item in split), encoding="utf-8")
-        print(f"{name}: {len(split)} examples -> {path}")
+        split_categories = sorted({record["category"] for record in split})
+        print(f"{name}: {len(split)} examples, categories={split_categories} -> {path}")
     return 0
 
 

@@ -95,6 +95,12 @@ class DataPipelineTests(unittest.TestCase):
         self.assertIn("cuda_available", report)
         self.assertIn(report["device"], {"cpu", "cuda"})
 
+    def test_long_cpu_training_is_guarded(self):
+        result = run_script("train_lora_smoke.py", "--config", "configs/training_exp002.yaml")
+        if not json.loads(run_script("check_training_resources.py").stdout)["cuda_available"]:
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("Long CPU training is blocked", result.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()

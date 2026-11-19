@@ -52,6 +52,11 @@ def main() -> int:
     args = parser.parse_args()
 
     config = yaml.safe_load(Path(args.config).read_text(encoding="utf-8"))
+    if not torch.cuda.is_available() and config.get("max_steps", 1) > 3 and not config.get("allow_slow_cpu", False):
+        raise RuntimeError(
+            "Long CPU training is blocked by default. Set allow_slow_cpu: true "
+            "only after explicitly accepting the resource cost."
+        )
     model_config = yaml.safe_load(Path(config["model_config"]).read_text(encoding="utf-8"))
     model_id = model_config["model_id"]
     tokenizer = AutoTokenizer.from_pretrained(model_id)

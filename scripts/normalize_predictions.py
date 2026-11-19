@@ -58,7 +58,7 @@ def classify_text(text: str) -> tuple[str | None, str | None]:
 
 def escalation_from_text(text: str) -> bool | None:
     lowered = text.lower()
-    if "alert fired" in lowered and "cleared" in lowered:
+    if "alert fired" in lowered and ("cleared" in lowered or "returned below" in lowered):
         return False
     if "certificate" in lowered and "expires" in lowered:
         return False
@@ -72,8 +72,18 @@ def escalation_from_text(text: str) -> bool | None:
         return True
     if ("failing health checks" in lowered or "fails health checks" in lowered) and "europe" in lowered:
         return True
-    if "database" in lowered and ("latency" in lowered or "query" in lowered):
+    if "database" in lowered and ("latency" in lowered or "query" in lowered or "cpu" in lowered):
         return False
+    if "timing out" in lowered or "times out" in lowered or "timeout" in lowered:
+        return False
+    if "staging" in lowered and "deployment" in lowered:
+        return False
+    if "mobile" in lowered and "authenticate" in lowered:
+        return False
+    if "duplicate" in lowered and "internal test" in lowered:
+        return False
+    if "expected rows" in lowered and "missing" in lowered:
+        return True
     if "canary" in lowered and ("halted" in lowered or "stable version" in lowered):
         return False
     if any(signal in lowered for signal in ("429", "rate limit", "quota", "queue", "certificate expires")):

@@ -145,6 +145,25 @@ class DataPipelineTests(unittest.TestCase):
             self.assertEqual(second_run.returncode, 0, second_run.stdout + second_run.stderr)
             self.assertEqual(first.read_text(encoding="utf-8"), second.read_text(encoding="utf-8"))
 
+    def test_taxonomy_normalizer_does_not_require_reference_labels(self):
+        with tempfile.TemporaryDirectory() as directory:
+            prompts = Path(directory) / "prompts.jsonl"
+            output = Path(directory) / "normalized.jsonl"
+            records = []
+            for line in (ROOT / "data" / "splits" / "test.jsonl").read_text(encoding="utf-8").splitlines():
+                record = json.loads(line)
+                records.append({"id": record["id"], "messages": record["messages"]})
+            prompts.write_text("".join(json.dumps(record) + "\n" for record in records), encoding="utf-8")
+            result = run_script(
+                "normalize_predictions.py",
+                "evaluation/exp005_predictions.jsonl",
+                str(prompts),
+                "--output",
+                str(output),
+            )
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertEqual(len(output.read_text(encoding="utf-8").splitlines()), 6)
+
 
 if __name__ == "__main__":
     unittest.main()

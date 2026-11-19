@@ -128,6 +128,8 @@ class DataPipelineTests(unittest.TestCase):
         self.assertEqual(classify_text("A password was found in a log."), ("credential_exposure", "SEV-1"))
         self.assertEqual(classify_text("The batch job completed successfully. There are no alerts."), ("no_incident", "none"))
         self.assertEqual(classify_text("The database CPU is high and latency increased."), ("database_latency", "SEV-2"))
+        self.assertEqual(classify_text("The payments API returns HTTP 503 in two regions."), ("service_outage", "SEV-1"))
+        self.assertEqual(classify_text("The latest deployment failed health checks in staging."), ("deployment_failure", "SEV-3"))
 
     def test_taxonomy_normalizer_is_idempotent(self):
         with tempfile.TemporaryDirectory() as directory:

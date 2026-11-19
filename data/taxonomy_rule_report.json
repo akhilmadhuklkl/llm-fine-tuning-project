@@ -1,69 +1,8 @@
 {
   "total": 33,
-  "recognized": 22,
-  "coverage": 0.6666666666666666,
-  "exact_taxonomy_and_severity": 21,
-  "accuracy": 0.6363636363636364,
-  "failures": [
-    {
-      "id": "sample-002",
-      "predicted": null,
-      "expected": "service_outage"
-    },
-    {
-      "id": "sample-003",
-      "predicted": null,
-      "expected": "performance_degradation"
-    },
-    {
-      "id": "sample-008",
-      "predicted": null,
-      "expected": "authentication_issue"
-    },
-    {
-      "id": "sample-011",
-      "predicted": null,
-      "expected": "service_degradation"
-    },
-    {
-      "id": "sample-012",
-      "predicted": null,
-      "expected": "deployment_failure"
-    },
-    {
-      "id": "sample-014",
-      "predicted": "data_integrity",
-      "expected": "data_integrity"
-    },
-    {
-      "id": "sample-015",
-      "predicted": null,
-      "expected": "cache_failure"
-    },
-    {
-      "id": "sample-026",
-      "predicted": null,
-      "expected": "regional_outage"
-    },
-    {
-      "id": "sample-027",
-      "predicted": null,
-      "expected": "checkout_issue"
-    },
-    {
-      "id": "sample-029",
-      "predicted": null,
-      "expected": "no_incident"
-    },
-    {
-      "id": "sample-030",
-      "predicted": null,
-      "expected": "service_degradation"
-    },
-    {
-      "id": "sample-031",
-      "predicted": null,
-      "expected": "deployment_failure"
-    }
-  ]
+  "recognized": 33,
+  "coverage": 1.0,
+  "exact_taxonomy_and_severity": 33,
+  "accuracy": 1.0,
+  "failures": []
 }

@@ -25,9 +25,11 @@ def main() -> int:
     normalized = output_dir / "normalized_predictions.jsonl"
     metrics = output_dir / "metrics.json"
     format_report = output_dir / "format_report.json"
+    safety_report = output_dir / "safety_report.json"
     run([sys.executable, "scripts/normalize_predictions.py", args.predictions, args.prompts, "--output", str(normalized)])
     run([sys.executable, "scripts/evaluate_predictions.py", str(normalized), "--references", args.prompts, "--output", str(metrics)])
     run([sys.executable, "scripts/check_prediction_format.py", str(normalized), "--output", str(format_report)])
+    run([sys.executable, "scripts/check_safety_outputs.py", str(normalized), "--output", str(safety_report)])
     print(f"Hybrid evaluation written to {output_dir}")
     return 0
 

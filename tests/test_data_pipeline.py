@@ -195,6 +195,7 @@ class DataPipelineTests(unittest.TestCase):
             format_report = json.loads((Path(directory) / "format_report.json").read_text(encoding="utf-8"))
             self.assertEqual(metrics["incident_type_accuracy"], 1.0)
             self.assertEqual(format_report["complete_contract_rate"], 1.0)
+            self.assertTrue((Path(directory) / "safety_report.json").exists())
 
 
 if __name__ == "__main__":

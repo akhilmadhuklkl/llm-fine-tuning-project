@@ -28,6 +28,19 @@ def main() -> int:
         record_id = record["id"]
         prefix = f"{record_id} (line {line_number})"
 
+        required_fields = {
+            "severity", "incident_type", "affected_services", "observed_facts",
+            "hypotheses", "next_steps", "escalation_required",
+        }
+        missing = sorted(required_fields - set(target))
+        if missing:
+            findings.append(f"{prefix}: missing target fields: {missing}")
+        for field in ("affected_services", "observed_facts", "hypotheses", "next_steps"):
+            if field in target and not isinstance(target[field], list):
+                findings.append(f"{prefix}: {field} must be a list")
+        if "escalation_required" in target and not isinstance(target["escalation_required"], bool):
+            findings.append(f"{prefix}: escalation_required must be boolean")
+
         if not target["next_steps"]:
             findings.append(f"{prefix}: next_steps is empty")
         if target["escalation_required"] and not target["next_steps"]:

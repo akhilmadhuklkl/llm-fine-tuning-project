@@ -21,7 +21,7 @@
     },
     "expected_output": {
       "type": "object",
-      "required": ["severity", "incident_type", "observed_facts", "hypotheses", "next_steps", "escalation_required"],
+      "required": ["severity", "incident_type", "affected_services", "observed_facts", "hypotheses", "next_steps", "escalation_required"],
       "properties": {
         "severity": {"enum": ["SEV-0", "SEV-1", "SEV-2", "SEV-3", "none", "unknown"]},
         "incident_type": {"type": "string"},

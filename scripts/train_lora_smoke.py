@@ -14,7 +14,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 
 
 class ChatDataset(Dataset):
-    def __init__(self, path: Path, tokenizer, max_length: int):
+    def __init__(self, path: Path, tokenizer, max_length: int, assistant_only_loss: bool = True):
         self.examples = []
         for line in path.read_text(encoding="utf-8").splitlines():
             if not line.strip():
@@ -22,10 +22,21 @@ class ChatDataset(Dataset):
             record = json.loads(line)
             if tokenizer.chat_template:
                 text = tokenizer.apply_chat_template(record["messages"], tokenize=False)
+                prompt_text = tokenizer.apply_chat_template(
+                    record["messages"][:-1], tokenize=False, add_generation_prompt=True
+                )
             else:
                 text = "\n".join(f"{message['role']}: {message['content']}" for message in record["messages"])
+                prompt_text = "\n".join(
+                    f"{message['role']}: {message['content']}" for message in record["messages"][:-1]
+                ) + "\nassistant:"
             encoded = tokenizer(text, truncation=True, max_length=max_length, padding="max_length")
-            encoded["labels"] = list(encoded["input_ids"])
+            labels = list(encoded["input_ids"])
+            if assistant_only_loss:
+                prompt_tokens = tokenizer(prompt_text, truncation=True, max_length=max_length)["input_ids"]
+                for index in range(min(len(prompt_tokens), len(labels))):
+                    labels[index] = -100
+            encoded["labels"] = labels
             self.examples.append({key: torch.tensor(value) for key, value in encoded.items()})
 
     def __len__(self):
@@ -60,7 +71,12 @@ def main() -> int:
     model = get_peft_model(model, lora_config)
     model.print_trainable_parameters()
 
-    train_dataset = ChatDataset(Path(config["train_file"]), tokenizer, config["max_seq_length"])
+    train_dataset = ChatDataset(
+        Path(config["train_file"]),
+        tokenizer,
+        config["max_seq_length"],
+        assistant_only_loss=config.get("assistant_only_loss", True),
+    )
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
     optimizer = torch.optim.AdamW(model.parameters(), lr=config["learning_rate"])

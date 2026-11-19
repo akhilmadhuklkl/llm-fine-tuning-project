@@ -101,6 +101,23 @@ class DataPipelineTests(unittest.TestCase):
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("Long CPU training is blocked", result.stderr)
 
+    def test_experiment_manifest_records_selected_configs(self):
+        with tempfile.TemporaryDirectory() as directory:
+            result = run_script(
+                "create_experiment_manifest.py",
+                "--name", "test_manifest",
+                "--output-dir", directory,
+                "--model-config", "configs/model_local.yaml",
+                "--training-config", "configs/training_exp002.yaml",
+            )
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            manifest = __import__("yaml").safe_load(
+                (Path(directory) / "test_manifest.yaml").read_text(encoding="utf-8")
+            )
+            self.assertEqual(manifest["training_config"]["max_steps"], 20)
+            self.assertEqual(manifest["model_config"]["model_id"], "models/smollm2-135m")
+            self.assertIn("data/splits/test.jsonl", manifest["files"])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -23,6 +23,7 @@ def main() -> int:
         prompts = root / "prompt.jsonl"
         raw = root / "raw.jsonl"
         normalized = root / "normalized.jsonl"
+        safety_report = root / "safety_report.json"
         prompts.write_text(
             json.dumps({"id": "local-incident", "messages": [{"role": "user", "content": args.text}]}) + "\n",
             encoding="utf-8",
@@ -35,6 +36,10 @@ def main() -> int:
         )
         subprocess.run(
             [sys.executable, "scripts/normalize_predictions.py", str(raw), str(prompts), "--output", str(normalized)],
+            check=True,
+        )
+        subprocess.run(
+            [sys.executable, "scripts/check_safety_outputs.py", str(normalized), "--output", str(safety_report)],
             check=True,
         )
         result = json.loads(normalized.read_text(encoding="utf-8").splitlines()[0])

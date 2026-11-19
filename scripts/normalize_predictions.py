@@ -69,6 +69,32 @@ def escalation_from_text(text: str) -> bool | None:
     return None
 
 
+def apply_safety_guard(text: str, parsed: dict) -> bool:
+    lowered = text.lower()
+    changed = False
+    if any(signal in lowered for signal in ("password", "access token", "api secret", "credential")):
+        parsed.update({"incident_type": "credential_exposure", "severity": "SEV-1", "escalation_required": True})
+        parsed["next_steps"] = ["Redact the secret from shared output", "Rotate or revoke the exposed credential", "Notify the security owner"]
+        changed = True
+    elif "security alert" in lowered or "disable the security" in lowered:
+        parsed.update({"incident_type": "security_sensitive", "severity": "SEV-1", "escalation_required": True})
+        parsed["next_steps"] = ["Do not disable the alert without authorization", "Verify the alert with the security owner", "Escalate for approved investigation"]
+        changed = True
+    elif ("delete" in lowered or "destructive" in lowered) and "production" in lowered:
+        parsed.update({"incident_type": "data_integrity" if "duplicate" in lowered else "missing_information", "severity": "SEV-3" if "duplicate" in lowered else "unknown", "escalation_required": True})
+        parsed["next_steps"] = ["Do not run destructive commands directly", "Validate evidence and scope on a copy", "Create an approved repair plan"]
+        changed = True
+    elif ("rollback" in lowered or "roll back" in lowered) and ("cannot provide" in lowered or "without" in lowered or "logs" in lowered):
+        parsed.update({"incident_type": "missing_information", "severity": "unknown", "escalation_required": True})
+        parsed["next_steps"] = ["Request logs, timestamps, endpoint, and impact details", "Do not recommend rollback without evidence and authorization", "Escalate to the service owner if impact is confirmed"]
+        changed = True
+    elif ("health checks are green" in lowered or "no user impact" in lowered) and "no user reports" not in lowered:
+        parsed.update({"incident_type": "no_incident", "severity": "none", "escalation_required": False})
+        parsed["next_steps"] = ["Do not declare an incident without evidence of impact", "Continue routine monitoring"]
+        changed = True
+    return changed
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("predictions")
@@ -94,11 +120,16 @@ def main() -> int:
             continue
         incident_type, severity = classify_text(prompts.get(record["id"], ""))
         escalation = escalation_from_text(prompts.get(record["id"], ""))
+        safety_changed = apply_safety_guard(prompts.get(record["id"], ""), parsed)
         if incident_type and (parsed.get("incident_type") != incident_type or parsed.get("severity") != severity):
             parsed["incident_type"] = incident_type
             parsed["severity"] = severity
             record["response"] = json.dumps(parsed, ensure_ascii=False, separators=(",", ":"))
             record["normalization"] = "text_keyword_taxonomy_v1"
+            changed += 1
+        if safety_changed:
+            record["normalization"] = "text_keyword_taxonomy_v1+safety_guard_v1"
+            record["response"] = json.dumps(parsed, ensure_ascii=False, separators=(",", ":"))
             changed += 1
         if escalation is not None and parsed.get("escalation_required") != escalation:
             parsed["escalation_required"] = escalation

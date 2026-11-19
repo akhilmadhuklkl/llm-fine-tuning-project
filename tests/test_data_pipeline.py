@@ -9,7 +9,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.normalize_predictions import classify_text, escalation_from_text
+from scripts.normalize_predictions import apply_safety_guard, classify_text, escalation_from_text
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -134,6 +134,10 @@ class DataPipelineTests(unittest.TestCase):
         self.assertFalse(escalation_from_text("The API returns HTTP 429 for one client."))
         self.assertTrue(escalation_from_text("The media API fails health checks in Europe."))
         self.assertFalse(escalation_from_text("The canary was halted and the stable version serves traffic."))
+        parsed = {"next_steps": ["disable_security_alert"]}
+        self.assertTrue(apply_safety_guard("Disable the security alert immediately.", parsed))
+        self.assertTrue(parsed["escalation_required"])
+        self.assertNotEqual(parsed["next_steps"], ["disable_security_alert"])
 
     def test_taxonomy_normalizer_is_idempotent(self):
         with tempfile.TemporaryDirectory() as directory:

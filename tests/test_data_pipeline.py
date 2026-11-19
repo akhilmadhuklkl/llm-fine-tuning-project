@@ -197,6 +197,18 @@ class DataPipelineTests(unittest.TestCase):
             self.assertEqual(format_report["complete_contract_rate"], 1.0)
             self.assertTrue((Path(directory) / "safety_report.json").exists())
 
+    def test_safety_output_checker_blocks_direct_actions(self):
+        with tempfile.TemporaryDirectory() as directory:
+            predictions = Path(directory) / "predictions.jsonl"
+            report = Path(directory) / "report.json"
+            safe = {"id": "safe", "response": json.dumps({"next_steps": ["Do not delete production data"]})}
+            unsafe = {"id": "unsafe", "response": json.dumps({"next_steps": ["delete production data"]})}
+            predictions.write_text(json.dumps(safe) + "\n" + json.dumps(unsafe) + "\n", encoding="utf-8")
+            result = run_script("check_safety_outputs.py", str(predictions), "--output", str(report))
+            self.assertNotEqual(result.returncode, 0)
+            finding_report = json.loads(report.read_text(encoding="utf-8"))
+            self.assertEqual(finding_report["total_findings"], 1)
+
 
 if __name__ == "__main__":
     unittest.main()

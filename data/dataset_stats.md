@@ -4,31 +4,31 @@ Generated from `data/sample_incidents.jsonl`.
 
 ## Overview
 
-- Total examples: **19**
-- Unique IDs: **19**
-- Average user-message characters: **117.3**
+- Total examples: **24**
+- Unique IDs: **24**
+- Average user-message characters: **120.1**
 - Maximum user-message characters: **171**
-- Average target JSON characters: **484.0**
+- Average target JSON characters: **488.5**
 
 ## Split sizes
 
-- `test`: 3
-- `train`: 13
-- `validation`: 3
+- `test`: 4
+- `train`: 15
+- `validation`: 5
 
 ## Categories
 
-- `cache_failure`: 1
-- `certificate_expiry`: 1
+- `cache_failure`: 2
+- `certificate_expiry`: 2
 - `data_integrity`: 1
 - `database_latency`: 2
-- `dependency_timeout`: 1
+- `dependency_timeout`: 2
 - `deployment_failure`: 1
 - `healthy_system`: 2
 - `missing_information`: 2
-- `monitoring_false_positive`: 1
+- `monitoring_false_positive`: 2
 - `queue_backlog`: 1
-- `rate_limit`: 1
+- `rate_limit`: 2
 - `regional_outage`: 2
 - `security_sensitive`: 2
 - `service_degradation`: 1
@@ -36,33 +36,33 @@ Generated from `data/sample_incidents.jsonl`.
 ## Severity distribution
 
 - `SEV-1`: 3
-- `SEV-2`: 6
-- `SEV-3`: 5
-- `none`: 3
+- `SEV-2`: 8
+- `SEV-3`: 7
+- `none`: 4
 - `unknown`: 2
 
 ## Incident types
 
 - `authentication_issue`: 1
-- `cache_failure`: 1
-- `certificate_expiry`: 1
+- `cache_failure`: 2
+- `certificate_expiry`: 2
 - `credential_exposure`: 2
 - `data_integrity`: 1
 - `database_latency`: 2
-- `dependency_timeout`: 1
+- `dependency_timeout`: 2
 - `deployment_failure`: 1
-- `monitoring_false_positive`: 1
+- `monitoring_false_positive`: 2
 - `no_incident`: 2
 - `performance_degradation`: 1
 - `queue_backlog`: 1
-- `rate_limit`: 1
+- `rate_limit`: 2
 - `regional_outage`: 1
 - `service_degradation`: 1
 - `service_outage`: 1
 
 ## Escalation labels
 
-- `False`: 12
+- `False`: 17
 - `True`: 7
 
 ## Interpretation

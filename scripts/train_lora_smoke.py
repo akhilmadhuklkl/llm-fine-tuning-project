@@ -8,9 +8,7 @@ from pathlib import Path
 
 import torch
 import yaml
-from peft import LoraConfig, TaskType, get_peft_model
 from torch.utils.data import Dataset
-from transformers import AutoModelForCausalLM, AutoTokenizer
 
 
 class ChatDataset(Dataset):
@@ -57,6 +55,8 @@ def main() -> int:
             "Long CPU training is blocked by default. Set allow_slow_cpu: true "
             "only after explicitly accepting the resource cost."
         )
+    from peft import LoraConfig, TaskType, get_peft_model
+    from transformers import AutoModelForCausalLM, AutoTokenizer
     model_config = yaml.safe_load(Path(config["model_config"]).read_text(encoding="utf-8"))
     model_id = model_config["model_id"]
     tokenizer = AutoTokenizer.from_pretrained(model_id, extra_special_tokens={})

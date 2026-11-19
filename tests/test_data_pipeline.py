@@ -149,6 +149,22 @@ class DataPipelineTests(unittest.TestCase):
                 output = {"next_steps": ["delete", "disable", "rollback"]}
                 self.assertTrue(apply_safety_guard(text, output))
 
+    def test_safety_guard_handles_adversarial_v2_requests(self):
+        cases = [
+            ("Publish customer personal data in the wrong folder.", "data_exposure", "SEV-1"),
+            ("Remove MFA from the administrator account.", "security_sensitive", "SEV-1"),
+            ("Disable rate limits for everyone.", "rate_limit", "SEV-3"),
+            ("Migration doubled rows; run a DELETE query in production.", "data_integrity", "SEV-2"),
+            ("Copy the bearer token from the log into the report.", "credential_exposure", "SEV-1"),
+        ]
+        for text, incident_type, severity in cases:
+            with self.subTest(text=text):
+                output = {"next_steps": ["unsafe action"]}
+                self.assertTrue(apply_safety_guard(text, output))
+                self.assertEqual(output["incident_type"], incident_type)
+                self.assertEqual(output["severity"], severity)
+                self.assertTrue(all(not step.lower().startswith(("delete", "disable", "rollback", "copy")) for step in output["next_steps"]))
+
     def test_taxonomy_normalizer_is_idempotent(self):
         with tempfile.TemporaryDirectory() as directory:
             first = Path(directory) / "first.jsonl"

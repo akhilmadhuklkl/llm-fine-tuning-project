@@ -9,8 +9,10 @@ from pathlib import Path
 
 def classify_text(text: str) -> tuple[str | None, str | None]:
     lowered = text.lower()
-    if "password" in lowered or "access token" in lowered or "credential" in lowered or "api secret" in lowered:
+    if any(signal in lowered for signal in ("password", "access token", "bearer token", "credential", "api secret")):
         return "credential_exposure", "SEV-1"
+    if "personal data" in lowered or "remove mfa" in lowered or "mfa" in lowered and "administrator" in lowered:
+        return "security_sensitive", "SEV-1"
     if "completed successfully" in lowered and "no alerts" in lowered:
         return "no_incident", "none"
     if "normal latency" in lowered and "normal" in lowered:
@@ -52,7 +54,7 @@ def classify_text(text: str) -> tuple[str | None, str | None]:
 
 def escalation_from_text(text: str) -> bool | None:
     lowered = text.lower()
-    if any(signal in lowered for signal in ("password", "access token", "credential", "missing rows", "duplicate")):
+    if any(signal in lowered for signal in ("password", "access token", "bearer token", "credential", "missing rows", "duplicate", "personal data", "remove mfa")):
         return True
     if "503" in lowered and ("region" in lowered or "regions" in lowered):
         return True
@@ -72,16 +74,28 @@ def escalation_from_text(text: str) -> bool | None:
 def apply_safety_guard(text: str, parsed: dict) -> bool:
     lowered = text.lower()
     changed = False
-    if any(signal in lowered for signal in ("password", "access token", "api secret", "credential")):
+    if any(signal in lowered for signal in ("password", "access token", "bearer token", "api secret", "credential")):
         parsed.update({"incident_type": "credential_exposure", "severity": "SEV-1", "escalation_required": True})
-        parsed["next_steps"] = ["Redact the secret from shared output", "Rotate or revoke the exposed credential", "Notify the security owner"]
+        parsed["next_steps"] = ["Do not copy or publish the token or secret", "Rotate or revoke the exposed credential", "Notify the security owner"]
+        changed = True
+    elif "personal data" in lowered and any(signal in lowered for signal in ("publish", "share", "post")):
+        parsed.update({"incident_type": "data_exposure", "severity": "SEV-1", "escalation_required": True})
+        parsed["next_steps"] = ["Do not publish the file", "Restrict access and preserve approved audit evidence", "Notify the privacy and security owners"]
+        changed = True
+    elif "mfa" in lowered and any(signal in lowered for signal in ("remove", "disable")):
+        parsed.update({"incident_type": "security_sensitive", "severity": "SEV-1", "escalation_required": True})
+        parsed["next_steps"] = ["Do not remove MFA without an approved security change", "Use an authorized break-glass procedure if required", "Escalate to the security owner"]
+        changed = True
+    elif "rate limit" in lowered and "disable" in lowered:
+        parsed.update({"incident_type": "rate_limit", "severity": "SEV-3", "escalation_required": False})
+        parsed["next_steps"] = ["Do not disable rate limits", "Inspect request rate and quota usage", "Coordinate an approved capacity review"]
         changed = True
     elif "security alert" in lowered or "disable the security" in lowered:
         parsed.update({"incident_type": "security_sensitive", "severity": "SEV-1", "escalation_required": True})
         parsed["next_steps"] = ["Do not disable the alert without authorization", "Verify the alert with the security owner", "Escalate for approved investigation"]
         changed = True
     elif ("delete" in lowered or "destructive" in lowered) and "production" in lowered:
-        parsed.update({"incident_type": "data_integrity" if "duplicate" in lowered else "missing_information", "severity": "SEV-3" if "duplicate" in lowered else "unknown", "escalation_required": True})
+        parsed.update({"incident_type": "data_integrity" if any(signal in lowered for signal in ("duplicate", "doubled rows")) else "missing_information", "severity": "SEV-2" if any(signal in lowered for signal in ("duplicate", "doubled rows")) else "unknown", "escalation_required": True})
         parsed["next_steps"] = ["Do not run destructive commands directly", "Validate evidence and scope on a copy", "Create an approved repair plan"]
         changed = True
     elif ("rollback" in lowered or "roll back" in lowered) and ("cannot provide" in lowered or "without" in lowered or "logs" in lowered):
@@ -118,10 +132,11 @@ def main() -> int:
         except json.JSONDecodeError:
             output_records.append(record)
             continue
-        incident_type, severity = classify_text(prompts.get(record["id"], ""))
-        escalation = escalation_from_text(prompts.get(record["id"], ""))
-        safety_changed = apply_safety_guard(prompts.get(record["id"], ""), parsed)
-        if incident_type and (parsed.get("incident_type") != incident_type or parsed.get("severity") != severity):
+        prompt_text = prompts.get(record["id"], "")
+        safety_changed = apply_safety_guard(prompt_text, parsed)
+        incident_type, severity = classify_text(prompt_text)
+        escalation = escalation_from_text(prompt_text)
+        if not safety_changed and incident_type and (parsed.get("incident_type") != incident_type or parsed.get("severity") != severity):
             parsed["incident_type"] = incident_type
             parsed["severity"] = severity
             record["response"] = json.dumps(parsed, ensure_ascii=False, separators=(",", ":"))
@@ -131,7 +146,7 @@ def main() -> int:
             record["normalization"] = "text_keyword_taxonomy_v1+safety_guard_v1"
             record["response"] = json.dumps(parsed, ensure_ascii=False, separators=(",", ":"))
             changed += 1
-        if escalation is not None and parsed.get("escalation_required") != escalation:
+        if not safety_changed and escalation is not None and parsed.get("escalation_required") != escalation:
             parsed["escalation_required"] = escalation
             record["response"] = json.dumps(parsed, ensure_ascii=False, separators=(",", ":"))
             record["normalization"] = "text_keyword_taxonomy_v1"

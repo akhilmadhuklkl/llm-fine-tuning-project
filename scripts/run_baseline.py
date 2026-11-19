@@ -17,7 +17,10 @@ def load_prompts(path: Path) -> list[dict]:
 
 
 def generate(model, tokenizer, messages: list[dict], max_new_tokens: int) -> str:
-    prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+    if tokenizer.chat_template:
+        prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+    else:
+        prompt = "\n".join(f"{message['role']}: {message['content']}" for message in messages) + "\nassistant:"
     inputs = tokenizer(prompt, return_tensors="pt")
     inputs = {key: value.to(model.device) for key, value in inputs.items()}
     with torch.no_grad():
@@ -31,9 +34,10 @@ def main() -> int:
     parser.add_argument("--prompts", default="evaluation/baseline_prompts.jsonl")
     parser.add_argument("--output", default="evaluation/baseline_results.jsonl")
     parser.add_argument("--max-new-tokens", type=int, default=256)
+    parser.add_argument("--model-config", default="configs/model.yaml")
     args = parser.parse_args()
 
-    config = yaml.safe_load(Path("configs/model.yaml").read_text(encoding="utf-8"))
+    config = yaml.safe_load(Path(args.model_config).read_text(encoding="utf-8"))
     model_id = config["model_id"]
     print(f"Loading {model_id}...")
     tokenizer = AutoTokenizer.from_pretrained(model_id)

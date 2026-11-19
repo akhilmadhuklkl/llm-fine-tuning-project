@@ -7,6 +7,8 @@
 - [x] GPU environment verified
 - [x] JSON-constrained generation implemented
 - [x] Hybrid taxonomy and escalation stage documented
+- [x] Local incident-triage CLI implemented
+- [x] CLI safety-output gate integrated
 - [x] Blind evaluation sets created and frozen
 - [x] Raw and hybrid metrics separated
 - [ ] Semantic accuracy meets release threshold on unseen data

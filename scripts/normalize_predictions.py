@@ -23,21 +23,25 @@ def classify_text(text: str) -> tuple[str | None, str | None]:
         return "service_outage", "SEV-1"
     if ("unavailable" in lowered or "failing health checks" in lowered) and ("region" in lowered or "regions" in lowered or "europe" in lowered):
         return "regional_outage", "SEV-2"
-    if "login" in lowered or "authentication" in lowered:
+    if "cache" in lowered and ("miss" in lowered or "hit rate" in lowered):
+        return "cache_failure", "SEV-2"
+    if "login" in lowered or "authenticate" in lowered or "authentication" in lowered:
         return "authentication_issue", "unknown"
     if "database" in lowered and ("latency" in lowered or "cpu" in lowered):
         return "database_latency", "SEV-2"
     if "checkout" in lowered:
         return "checkout_issue", "unknown"
+    if ("region" in lowered or "europe" in lowered or "asia" in lowered) and ("health check" in lowered or "unavailable" in lowered or "fails" in lowered):
+        return "regional_outage", "SEV-2"
     if ("deployment" in lowered or "release" in lowered or "canary" in lowered) and "no deployment" not in lowered:
         return "deployment_failure", "SEV-3"
-    if "timing out" in lowered or "timeout rate" in lowered:
+    if "timing out" in lowered or "times out" in lowered or "timeout rate" in lowered:
         return "dependency_timeout", "SEV-2"
     if "cache miss" in lowered or "cache misses" in lowered or "cache hit rate" in lowered:
         return "cache_failure", "SEV-2"
-    if "alert fired" in lowered and ("returned to baseline" in lowered or "returned below" in lowered):
+    if "alert fired" in lowered and ("returned to baseline" in lowered or "returned below" in lowered or "cleared" in lowered):
         return "monitoring_false_positive", "none"
-    if "application is slow" in lowered and "root cause" in lowered:
+    if ("application is slow" in lowered or "dashboard is slow" in lowered) and ("root cause" in lowered or "dependency" in lowered):
         return "performance_degradation", "unknown"
     if ("slo" in lowered or "response time" in lowered) and ("slow" in lowered or "latency" in lowered or "above" in lowered or "four times" in lowered):
         return "service_degradation", "SEV-3"
@@ -47,13 +51,19 @@ def classify_text(text: str) -> tuple[str | None, str | None]:
         return "rate_limit", "SEV-3"
     if "queue" in lowered or "throughput" in lowered or "delivery delay" in lowered:
         return "queue_backlog", "SEV-2"
-    if "duplicate" in lowered or "missing rows" in lowered or "data integrity" in lowered:
+    if "duplicate" in lowered or "missing rows" in lowered or "expected rows" in lowered or "data integrity" in lowered:
         return "data_integrity", "SEV-3" if "internal test" in lowered else "SEV-2"
     return None, None
 
 
 def escalation_from_text(text: str) -> bool | None:
     lowered = text.lower()
+    if "alert fired" in lowered and "cleared" in lowered:
+        return False
+    if "certificate" in lowered and "expires" in lowered:
+        return False
+    if "checkout" in lowered or "slo" in lowered or "response time" in lowered:
+        return False
     if any(signal in lowered for signal in ("password", "access token", "bearer token", "credential", "missing rows", "duplicate", "personal data", "remove mfa")):
         return True
     if "503" in lowered and ("region" in lowered or "regions" in lowered):

@@ -1,0 +1,25 @@
+{
+  "total_predictions": 44,
+  "valid_json": 40,
+  "json_parse_rate": 0.9090909090909091,
+  "complete_contracts": 40,
+  "complete_contract_rate": 0.9090909090909091,
+  "failures": [
+    {
+      "id": "blind3-001",
+      "reason": "invalid_json"
+    },
+    {
+      "id": "blind3-011",
+      "reason": "invalid_json"
+    },
+    {
+      "id": "blind3-031",
+      "reason": "invalid_json"
+    },
+    {
+      "id": "blind3-040",
+      "reason": "invalid_json"
+    }
+  ]
+}

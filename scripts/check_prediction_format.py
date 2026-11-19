@@ -16,6 +16,7 @@ REQUIRED_FIELDS = {
     "next_steps",
     "escalation_required",
 }
+SEVERITIES = {"SEV-0", "SEV-1", "SEV-2", "SEV-3", "none", "unknown"}
 
 
 def main() -> int:
@@ -46,6 +47,17 @@ def main() -> int:
         missing = sorted(REQUIRED_FIELDS - set(parsed))
         if missing:
             failures.append({"id": record.get("id"), "reason": "missing_fields", "fields": missing})
+            continue
+        type_errors = []
+        if parsed["severity"] not in SEVERITIES:
+            type_errors.append("invalid_severity")
+        for field in ("affected_services", "observed_facts", "hypotheses", "next_steps"):
+            if not isinstance(parsed[field], list) or not all(isinstance(item, str) for item in parsed[field]):
+                type_errors.append(f"invalid_{field}")
+        if not isinstance(parsed["escalation_required"], bool):
+            type_errors.append("invalid_escalation_required")
+        if type_errors:
+            failures.append({"id": record.get("id"), "reason": "invalid_types", "fields": type_errors})
         else:
             complete += 1
 

@@ -29,6 +29,8 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--name", required=True)
     parser.add_argument("--output-dir", default="experiments")
+    parser.add_argument("--model-config", default="configs/model.yaml")
+    parser.add_argument("--training-config", default="configs/training.yaml")
     args = parser.parse_args()
 
     files = [
@@ -36,8 +38,8 @@ def main() -> int:
         "data/splits/train.jsonl",
         "data/splits/validation.jsonl",
         "data/splits/test.jsonl",
-        "configs/model.yaml",
-        "configs/training.yaml",
+        args.model_config,
+        args.training_config,
     ]
     manifest = {
         "experiment": args.name,
@@ -47,8 +49,8 @@ def main() -> int:
         "platform": platform.platform(),
         "python": platform.python_version(),
         "files": {path: {"sha256": sha256(Path(path)), "bytes": Path(path).stat().st_size} for path in files},
-        "model_config": yaml.safe_load(Path("configs/model.yaml").read_text(encoding="utf-8")),
-        "training_config": yaml.safe_load(Path("configs/training.yaml").read_text(encoding="utf-8")),
+        "model_config": yaml.safe_load(Path(args.model_config).read_text(encoding="utf-8")),
+        "training_config": yaml.safe_load(Path(args.training_config).read_text(encoding="utf-8")),
     }
     output = Path(args.output_dir) / f"{args.name}.yaml"
     output.parent.mkdir(parents=True, exist_ok=True)

@@ -1,0 +1,63 @@
+experiment: exp002_manifest
+created_at_utc: '2026-11-19T13:36:13.658465+00:00'
+git_commit: 70ae2c4b64317ce70ae9821ceb3edbfc4ee41e4b
+git_branch: main
+platform: Windows-11-10.0.26300-SP0
+python: 3.14.4
+files:
+  data/sample_incidents.jsonl:
+    sha256: d04c1a5394a3e7975913321f98e55e456ee98d92143621838f64ad4f8a9bf7d9
+    bytes: 23343
+  data/splits/train.jsonl:
+    sha256: cd401acdf957029c3842b9ab3acb446f7be5ed65e9ee01228239127837f41959
+    bytes: 14832
+  data/splits/validation.jsonl:
+    sha256: 16a14127f57dbe8cd127fb719e990e8935a6f25c3165c4826d6cbd5a4986d2ac
+    bytes: 4807
+  data/splits/test.jsonl:
+    sha256: 8213c61c1ace3a4f78c62878fe17c9770574907600db6a8eb0b868e4c6e123da
+    bytes: 4618
+  configs/model_local.yaml:
+    sha256: 69c5097d31b4d64044c1a50297db51cc3fc4e91a4d4e7ca32a4eb4589700bac1
+    bytes: 255
+  configs/training_exp002.yaml:
+    sha256: e7f8e5f66854811fda4ea21b4ded5fc80b167cc8609f46084e31d8482ba6cf94
+    bytes: 721
+model_config:
+  model_id: models/smollm2-135m
+  model_revision: local-download
+  trust_remote_code: false
+  torch_dtype: auto
+  device_map: auto
+  use_cache: false
+  task: it_incident_triage
+  output_format: json
+training_config:
+  model_config: configs/model_local.yaml
+  train_file: data/processed/train_chat.jsonl
+  validation_file: data/processed/validation_chat.jsonl
+  output_dir: models/smollm2-lora-exp002
+  max_seq_length: 256
+  assistant_only_loss: true
+  per_device_train_batch_size: 1
+  per_device_eval_batch_size: 1
+  gradient_accumulation_steps: 1
+  learning_rate: 0.0002
+  num_train_epochs: 1
+  max_steps: 20
+  allow_slow_cpu: false
+  eval_every_n_steps: 5
+  logging_steps: 1
+  save_strategy: 'no'
+  evaluation_strategy: 'no'
+  fp16: false
+  bf16: false
+  gradient_checkpointing: false
+  lora_r: 4
+  lora_alpha: 8
+  lora_dropout: 0.05
+  lora_target_modules:
+  - q_proj
+  - k_proj
+  - v_proj
+  - o_proj

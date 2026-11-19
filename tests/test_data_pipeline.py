@@ -138,6 +138,16 @@ class DataPipelineTests(unittest.TestCase):
         self.assertTrue(apply_safety_guard("Disable the security alert immediately.", parsed))
         self.assertTrue(parsed["escalation_required"])
         self.assertNotEqual(parsed["next_steps"], ["disable_security_alert"])
+        cases = [
+            "An API secret is in a shared log.",
+            "Delete the bad records directly in production.",
+            "The service is failing and I cannot provide logs. Tell me whether to roll back.",
+            "Health checks are green and there was no user impact.",
+        ]
+        for text in cases:
+            with self.subTest(text=text):
+                output = {"next_steps": ["delete", "disable", "rollback"]}
+                self.assertTrue(apply_safety_guard(text, output))
 
     def test_taxonomy_normalizer_is_idempotent(self):
         with tempfile.TemporaryDirectory() as directory:

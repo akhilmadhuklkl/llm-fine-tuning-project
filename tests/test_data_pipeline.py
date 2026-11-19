@@ -9,6 +9,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from scripts.normalize_predictions import classify_text
+
 
 ROOT = Path(__file__).resolve().parents[1]
 PYTHON = sys.executable
@@ -117,6 +119,12 @@ class DataPipelineTests(unittest.TestCase):
             self.assertEqual(manifest["training_config"]["max_steps"], 20)
             self.assertEqual(manifest["model_config"]["model_id"], "models/smollm2-135m")
             self.assertIn("data/splits/test.jsonl", manifest["files"])
+
+    def test_taxonomy_normalizer_edge_cases(self):
+        self.assertEqual(classify_text("The API returns HTTP 429 for one client."), ("rate_limit", "SEV-3"))
+        self.assertEqual(classify_text("Queue throughput is below incoming traffic."), ("queue_backlog", "SEV-2"))
+        self.assertEqual(classify_text("Duplicate records appeared after migration."), ("data_integrity", "SEV-2"))
+        self.assertEqual(classify_text("The certificate expires tomorrow."), (None, None))
 
 
 if __name__ == "__main__":

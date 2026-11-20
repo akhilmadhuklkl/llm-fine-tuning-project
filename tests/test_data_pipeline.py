@@ -98,18 +98,20 @@ class DataPipelineTests(unittest.TestCase):
         self.assertIn(report["device"], {"cpu", "cuda"})
 
     def test_long_cpu_training_is_guarded(self):
-        result = run_script("train_lora_smoke.py", "--config", "configs/training_exp002.yaml")
-        if not json.loads(run_script("check_training_resources.py").stdout)["cuda_available"]:
+        resources = json.loads(run_script("check_training_resources.py").stdout)
+        if not resources["cuda_available"]:
+            result = run_script("train_lora_smoke.py", "--config", "configs/training_exp002.yaml")
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("Long CPU training is blocked", result.stderr)
 
     def test_large_cpu_evaluation_is_guarded(self):
-        result = run_script(
-            "run_baseline.py",
-            "--prompts", "data/blind_evaluation_v3.jsonl",
-            "--model-config", "configs/model_qwen_local.yaml",
-        )
-        if not json.loads(run_script("check_training_resources.py").stdout)["cuda_available"]:
+        resources = json.loads(run_script("check_training_resources.py").stdout)
+        if not resources["cuda_available"]:
+            result = run_script(
+                "run_baseline.py",
+                "--prompts", "data/blind_evaluation_v3.jsonl",
+                "--model-config", "configs/model_qwen_local.yaml",
+            )
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("Large CPU evaluation is blocked", result.stderr)
 

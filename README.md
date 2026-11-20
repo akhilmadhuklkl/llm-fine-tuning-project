@@ -52,9 +52,12 @@ notebooks/     Exploratory analysis notebooks
 \.venv\Scripts\python.exe scripts\preflight_experiment.py --model-config configs/model_local.yaml
 \.venv\Scripts\python.exe scripts\run_hybrid_pipeline.py evaluation/exp005_predictions.jsonl data/splits/test.jsonl
 python scripts\triage_incident.py "The partner API is returning HTTP 429 responses for one client."
+python scripts\serve_ui.py
 ```
 
 The longer run is protected by a CPU safety guard. Do not set `allow_slow_cpu: true` unless the resource cost is explicitly accepted.
+
+The custom browser UI is served locally at `http://127.0.0.1:8501` by `scripts/serve_ui.py`. It calls the same CLI pipeline and keeps all incident text local. Streamlit is not required for the primary UI.
 
 ## Evaluation interpretation
 

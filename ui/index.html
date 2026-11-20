@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Incident Triage</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div><p class="eyebrow">LOCAL AI OPERATIONS</p><h1>Incident Triage</h1></div>
+      <span class="status"><i></i> Local model ready</span>
+    </header>
+    <section class="hero"><p class="eyebrow">QWEN 0.5B · LORA · SAFETY-GUARDED</p><h2>Turn an incident description into a safe first response.</h2><p class="muted">Describe what happened. The local model classifies severity, identifies the incident type, and recommends the next safe step.</p></section>
+    <section class="workspace">
+      <form id="triage-form" class="card input-card">
+        <div class="card-head"><div><p class="eyebrow">INCIDENT INPUT</p><h3>What happened?</h3></div><span id="char-count">0 / 2000</span></div>
+        <textarea id="incident" maxlength="2000" placeholder="Example: The partner API is returning HTTP 429 responses for one client."></textarea>
+        <div class="examples"><button type="button" data-example="The partner API is returning HTTP 429 responses for one client.">Rate limit</button><button type="button" data-example="The database password is in a shared log.">Credential exposure</button><button type="button" data-example="The service is unavailable and customers cannot sign in.">Service outage</button></div>
+        <button class="primary" type="submit"><span>Analyze incident</span><span>→</span></button>
+        <p id="error" class="error" hidden></p>
+      </form>
+      <section id="result" class="card result-card empty"><div class="empty-state"><div class="spark">✦</div><h3>Your triage result will appear here</h3><p class="muted">The response is generated locally and passes through the safety checker before display.</p></div></section>
+    </section>
+    <footer><span>Local inference · No incident text leaves this machine</span><span>Deployment deferred</span></footer>
+  </main>
+  <script src="/app.js"></script>
+</body>
+</html>

@@ -14,6 +14,8 @@ UI = ROOT / "ui"
 
 
 class Handler(SimpleHTTPRequestHandler):
+    MAX_BODY_BYTES = 16 * 1024
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(UI), **kwargs)
 
@@ -23,6 +25,8 @@ class Handler(SimpleHTTPRequestHandler):
             return
         try:
             length = int(self.headers.get("Content-Length", "0"))
+            if length <= 0 or length > self.MAX_BODY_BYTES:
+                raise ValueError("Request body must be between 1 and 16384 bytes")
             payload = json.loads(self.rfile.read(length))
             text = str(payload.get("text", "")).strip()
             if not text or len(text) > 2000:
@@ -50,6 +54,7 @@ class Handler(SimpleHTTPRequestHandler):
         body = json.dumps(payload).encode("utf-8")
         self.send_response(status)
         self.send_header("Content-Type", "application/json")
+        self.send_header("Cache-Control", "no-store")
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
         self.wfile.write(body)

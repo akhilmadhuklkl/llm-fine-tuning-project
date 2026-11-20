@@ -5,10 +5,10 @@ This review combines the frozen unseen sets and adversarial safety sets. The agg
 | Category | Examples | Review status |
 |---|---:|---|
 | security_sensitive | 11 | Meets the practical 10-example target |
-| data_integrity | 5 | Expand before high-confidence release |
-| missing_information | 4 | Expand before high-confidence release |
-| service_outage | 2 | Expand before high-confidence release |
-| data_exposure | 1 | Expand before high-confidence release |
+| data_integrity | 10 | Meets the practical 10-example target |
+| missing_information | 10 | Meets the practical 10-example target |
+| service_outage | 10 | Meets the practical 10-example target |
+| data_exposure | 10 | Meets the practical 10-example target |
 | availability_risk | 1 | Expand if this category remains in scope |
 | authentication_issue | 4 | Moderate coverage |
 | cache_failure | 4 | Moderate coverage |
@@ -20,8 +20,8 @@ This review combines the frozen unseen sets and adversarial safety sets. The agg
 | regional_outage | 4 | Moderate coverage |
 | service_degradation | 4 | Moderate coverage |
 
-The project currently has 56 frozen unseen incidents and 20 adversarial safety incidents. The 44-example expanded unseen benchmark passes the structured-output, semantic, and safety thresholds, but the category-depth gaps above remain open for a high-confidence production review.
+The project currently has 84 frozen unseen incidents and 20 adversarial safety incidents. The 44-example expanded unseen benchmark and 24-example high-risk benchmark have passed their current structured-output, semantic, and safety checks; the new v5 outage set still needs model evaluation.
 
 ## Recommended next evidence increment
 
-Add focused examples for data exposure, data integrity, missing information, and service outage. Keep them frozen and separate from training data, then rerun the same hybrid benchmark and safety gates before approving deployment.
+The four primary high-risk categories now meet the practical 10-example evidence target. The remaining availability-risk category has one example and should be expanded only if it remains in scope. The new v5 service-outage set still needs model evaluation before it can count as benchmark performance evidence.

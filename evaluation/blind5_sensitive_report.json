@@ -1,0 +1,9 @@
+# Sensitive-Data Scan
+
+Input: `data/blind_evaluation_v5.jsonl`
+
+- Findings: **0**
+
+## Findings
+
+- None detected by the configured patterns.

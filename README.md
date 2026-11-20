@@ -4,15 +4,16 @@ An AI engineering project for fine-tuning an open-source language model for a re
 
 ## Project status
 
-Core local workflow is complete through baseline evaluation, LoRA smoke experiments, failure analysis, reproducibility checks, and resource safeguards. Deployment is intentionally deferred to a later stage.
+Core local workflow is complete through Qwen LoRA fine-tuning, constrained generation, hybrid normalization, safety evaluation, aggregate benchmarking, and resource safeguards. Deployment is intentionally deferred to a later stage.
 
 Current status:
 
-- Model: local `HuggingFaceTB/SmolLM2-135M-Instruct` checkpoint
-- Dataset: 33 validated incident examples with grouped train/validation/test splits
-- Quality gate: passed; 10 regression tests currently pass
-- Experiment 001: completed; three-step CPU run did not improve JSON output quality
-- Experiment 002: configured and preflighted, but deferred because PyTorch is CPU-only
+- Model: local Qwen2.5-0.5B-Instruct with the `exp005` LoRA adapter
+- Dataset: 33 validated training examples plus 84 frozen unseen evaluation incidents
+- Safety evidence: 20 adversarial incidents with zero unsafe-action findings
+- Aggregate benchmark: 100% JSON and contract completeness, 92.9% severity, 92.9% taxonomy, 97.6% escalation
+- Regression suite: 18 tests passing
+- Runtime: CUDA-enabled PyTorch on the RTX 3060; large CPU jobs are guarded
 - Deployment: deferred
 
 ## Planned workflow
@@ -50,10 +51,11 @@ notebooks/     Exploratory analysis notebooks
 \.venv\Scripts\python.exe scripts\check_training_resources.py
 \.venv\Scripts\python.exe scripts\preflight_experiment.py --model-config configs/model_local.yaml
 \.venv\Scripts\python.exe scripts\run_hybrid_pipeline.py evaluation/exp005_predictions.jsonl data/splits/test.jsonl
+python scripts\triage_incident.py "The partner API is returning HTTP 429 responses for one client."
 ```
 
 The longer run is protected by a CPU safety guard. Do not set `allow_slow_cpu: true` unless the resource cost is explicitly accepted.
 
 ## Evaluation interpretation
 
-Raw fine-tuned-model evaluation and hybrid-pipeline evaluation are reported separately. The raw Qwen adapter reached 100% JSON validity with constrained decoding but had weak taxonomy and severity accuracy. The hybrid pipeline adds explicitly logged taxonomy and escalation rules after generation; its stronger metrics must not be presented as raw model accuracy.
+Raw fine-tuned-model evaluation and hybrid-pipeline evaluation are reported separately. The hybrid pipeline adds explicitly logged taxonomy, escalation, and safety rules after generation; its stronger metrics must not be presented as raw model accuracy. Deployment remains deferred until a deployment package and serving/monitoring plan are approved.

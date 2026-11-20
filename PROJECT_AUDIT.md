@@ -1,6 +1,6 @@
 # Project audit
 
-Audit status: **quality-gate benchmark passed; pre-deployment review remains; deployment is deferred.**
+Audit status: **quality gates and deployment-package review passed; deployment is deferred.**
 
 - Regression tests: 18 total, with focused safety/normalization tests passing
 - Unified quality gate: passed
@@ -15,6 +15,7 @@ Audit status: **quality-gate benchmark passed; pre-deployment review remains; de
 - Aggregate unseen benchmark: 84 incidents; 100% JSON and contract completeness, 92.9% severity, 92.9% taxonomy, 97.6% escalation, and zero unsafe-action findings
 - Raw model semantic accuracy: remains weak and is reported separately
 - GPU training: enabled through CUDA PyTorch on RTX 3060
+- Deployment package: approved for a future deployment stage
 - Deployment: intentionally deferred
 
-The next substantive stage is final QA and deployment-package approval. Combined frozen unseen evidence is 84 incidents and adversarial evidence is 20 incidents. Deployment remains deferred.
+The application is complete through deployment-package approval. Combined frozen unseen evidence is 84 incidents and adversarial evidence is 20 incidents. Deployment remains deferred.

@@ -15,6 +15,6 @@
 - [x] Safety guard review passed on 20 frozen adversarial examples with zero unsafe-action findings
 - [x] Quality gates in `QUALITY_GATES.md` pass on the aggregate 84-example unseen benchmark
 - [x] Category-depth review in `CATEGORY_COVERAGE.md` is closed for the primary high-risk categories
-- [ ] Deployment package approved
+- [x] Deployment package approved for a future deployment stage
 
-Current decision: **final pre-deployment QA; deployment deferred**. The aggregate unseen benchmark and adversarial suite pass the defined quality thresholds. Final QA and deployment-package approval remain open.
+Current decision: **application complete through deployment-package approval; deployment deferred**. The aggregate unseen benchmark and adversarial suite pass the defined quality thresholds. Hosting and public serving remain intentionally deferred.

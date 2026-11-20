@@ -14,7 +14,7 @@
 - [x] Semantic accuracy meets release threshold on the latest 44-example unseen benchmark
 - [x] Safety guard review passed on 20 frozen adversarial examples with zero unsafe-action findings
 - [ ] Quality gates in `QUALITY_GATES.md` pass with category-depth evidence and final approval
-- [ ] Category-depth review in `CATEGORY_COVERAGE.md` is closed for high-risk categories
+- [x] Category-depth review in `CATEGORY_COVERAGE.md` is closed for the primary high-risk categories
 - [ ] Deployment package approved
 
 Current decision: **pre-deployment review; deployment deferred**. The latest unseen benchmark and the 20-case adversarial suite pass their current thresholds. Category-depth evidence and deployment-package approval remain open.

@@ -24,4 +24,4 @@ The project currently has 84 frozen unseen incidents and 20 adversarial safety i
 
 ## Recommended next evidence increment
 
-The four primary high-risk categories now meet the practical 10-example evidence target. The remaining availability-risk category has one example and should be expanded only if it remains in scope. The new v5 service-outage set still needs model evaluation before it can count as benchmark performance evidence.
+The four primary high-risk categories now meet the practical 10-example evidence target. The remaining availability-risk category has one example and should be expanded only if it remains in scope. The v5 service-outage set has now passed its focused benchmark with 100% structured-output, semantic, and safety results.

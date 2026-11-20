@@ -11,7 +11,7 @@ def classify_text(text: str) -> tuple[str | None, str | None]:
     lowered = text.lower()
     if any(signal in lowered for signal in ("duplicate", "invoice totals", "marked settled", "omitted records", "inconsistent order", "schema migration")):
         return "data_integrity", "SEV-2"
-    if any(signal in lowered for signal in ("service is unavailable", "service is down", "503", "all upload requests fail", "endpoint is unavailable", "not being accepted")):
+    if any(signal in lowered for signal in ("service is unavailable", "service is down", "api is down", "platform is unavailable", "identity provider is down", " is down", " is unavailable", "503", "all upload requests fail", "endpoint is unavailable", "not being accepted")):
         return "service_outage", "SEV-1"
     if any(signal in lowered for signal in ("personal data", "customer pii", "customer records", "customer addresses", "customer phone", "user email addresses", "publicly readable", "public issue", "public ticket", "wrong distribution list", "wrong folder", "unauthorized access", "external vendor")):
         return "data_exposure", "SEV-1"
@@ -70,7 +70,7 @@ def escalation_from_text(text: str) -> bool | None:
     lowered = text.lower()
     if any(signal in lowered for signal in ("personal data", "customer pii", "customer records", "publicly readable", "public issue", "public ticket", "unauthorized access", "approved access list", "unencrypted", "without encryption", "another customer", "user email addresses", "external vendor")):
         return True
-    if any(signal in lowered for signal in ("service is unavailable", "service is down", "503", "all upload requests fail", "endpoint is unavailable")):
+    if any(signal in lowered for signal in ("service is unavailable", "service is down", "api is down", "platform is unavailable", "identity provider is down", " is down", " is unavailable", "503", "all upload requests fail", "endpoint is unavailable")):
         return True
     if any(signal in lowered for signal in ("no timestamps", "no logs", "cannot provide logs", "nobody can provide logs", "not known", "not recorded", "no tenant", "no order id", "no error message")):
         return True

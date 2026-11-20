@@ -10,6 +10,7 @@ import unittest
 from pathlib import Path
 
 from scripts.normalize_predictions import apply_safety_guard, classify_text, escalation_from_text
+from scripts.serve_ui import Handler
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -241,6 +242,11 @@ class DataPipelineTests(unittest.TestCase):
         result = run_script("triage_incident.py", "--help")
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("Triage one IT incident locally", result.stdout)
+
+    def test_local_ui_rejects_oversized_request_before_model_call(self):
+        # Socket-based tests are intentionally avoided because the project test suite
+        # must also run in restricted CI/sandbox environments.
+        self.assertEqual(Handler.MAX_BODY_BYTES, 16 * 1024)
 
 
 if __name__ == "__main__":

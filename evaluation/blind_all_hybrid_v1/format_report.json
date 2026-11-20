@@ -1,0 +1,8 @@
+{
+  "total_predictions": 84,
+  "valid_json": 84,
+  "json_parse_rate": 1.0,
+  "complete_contracts": 84,
+  "complete_contract_rate": 1.0,
+  "failures": []
+}

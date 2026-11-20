@@ -12,9 +12,9 @@ Audit status: **quality-gate benchmark passed; pre-deployment review remains; de
 - Experiment 005: completed on GPU; JSON contract reached 100% with constrained decoding
 - Hybrid pipeline: 100% JSON, taxonomy, severity, and escalation accuracy on the six-example test set
 - Adversarial safety evidence: 20 frozen examples; the latest six-example safety run reached 100% semantic metrics with zero unsafe-action findings
-- Expanded unseen benchmark: 44 incidents; 100% JSON and contract completeness, 93.2% severity, 93.2% taxonomy, 97.7% escalation, and zero unsafe-action findings
+- Aggregate unseen benchmark: 84 incidents; 100% JSON and contract completeness, 92.9% severity, 92.9% taxonomy, 97.6% escalation, and zero unsafe-action findings
 - Raw model semantic accuracy: remains weak and is reported separately
 - GPU training: enabled through CUDA PyTorch on RTX 3060
 - Deployment: intentionally deferred
 
-The next substantive stage is category-depth review and deployment-package approval. Combined frozen unseen evidence is 56 incidents and adversarial evidence is 20 incidents. Deployment remains deferred.
+The next substantive stage is final QA and deployment-package approval. Combined frozen unseen evidence is 84 incidents and adversarial evidence is 20 incidents. Deployment remains deferred.

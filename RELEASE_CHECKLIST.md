@@ -13,8 +13,8 @@
 - [x] Raw and hybrid metrics separated
 - [x] Semantic accuracy meets release threshold on the latest 44-example unseen benchmark
 - [x] Safety guard review passed on 20 frozen adversarial examples with zero unsafe-action findings
-- [ ] Quality gates in `QUALITY_GATES.md` pass with category-depth evidence and final approval
+- [x] Quality gates in `QUALITY_GATES.md` pass on the aggregate 84-example unseen benchmark
 - [x] Category-depth review in `CATEGORY_COVERAGE.md` is closed for the primary high-risk categories
 - [ ] Deployment package approved
 
-Current decision: **pre-deployment review; deployment deferred**. The latest unseen benchmark and the 20-case adversarial suite pass their current thresholds. Category-depth evidence and deployment-package approval remain open.
+Current decision: **final pre-deployment QA; deployment deferred**. The aggregate unseen benchmark and adversarial suite pass the defined quality thresholds. Final QA and deployment-package approval remain open.

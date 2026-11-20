@@ -9,7 +9,13 @@ from pathlib import Path
 
 def classify_text(text: str) -> tuple[str | None, str | None]:
     lowered = text.lower()
-    if any(signal in lowered for signal in ("personal data", "customer pii", "customer records", "customer addresses", "customer phone", "publicly readable", "public issue", "wrong distribution list", "wrong folder", "unauthorized access")):
+    if any(signal in lowered for signal in ("duplicate", "invoice totals", "marked settled", "omitted records", "inconsistent order", "schema migration")):
+        return "data_integrity", "SEV-2"
+    if any(signal in lowered for signal in ("service is unavailable", "service is down", "503", "all upload requests fail", "endpoint is unavailable", "not being accepted")):
+        return "service_outage", "SEV-1"
+    if any(signal in lowered for signal in ("personal data", "customer pii", "customer records", "customer addresses", "customer phone", "user email addresses", "publicly readable", "public issue", "public ticket", "wrong distribution list", "wrong folder", "unauthorized access", "external vendor")):
+        return "data_exposure", "SEV-1"
+    if any(signal in lowered for signal in ("not on the approved access list", "publicly", "unencrypted", "another customer", "wrong distribution")):
         return "data_exposure", "SEV-1"
     if any(signal in lowered for signal in ("password", "access token", "bearer token", "credential", "api secret")):
         return "credential_exposure", "SEV-1"
@@ -31,12 +37,8 @@ def classify_text(text: str) -> tuple[str | None, str | None]:
         return "authentication_issue", "unknown"
     if "database" in lowered and ("latency" in lowered or "cpu" in lowered):
         return "database_latency", "SEV-2"
-    if any(signal in lowered for signal in ("duplicate", "invoice totals", "marked settled", "omitted records", "inconsistent order", "schema migration")):
-        return "data_integrity", "SEV-2"
-    if any(signal in lowered for signal in ("no timestamps", "no logs", "not known", "not recorded", "no tenant", "no order id", "no error message")):
+    if any(signal in lowered for signal in ("no timestamps", "no logs", "cannot provide logs", "nobody can provide logs", "not known", "not recorded", "no tenant", "no order id", "no error message")):
         return "missing_information", "unknown"
-    if any(signal in lowered for signal in ("503", "service is unavailable", "service is down", "endpoint is unavailable", "all upload requests fail", "not being accepted")):
-        return "service_outage", "SEV-1"
     if "checkout" in lowered:
         return "checkout_issue", "unknown"
     if ("region" in lowered or "europe" in lowered or "asia" in lowered) and ("health check" in lowered or "unavailable" in lowered or "fails" in lowered):
@@ -66,11 +68,11 @@ def classify_text(text: str) -> tuple[str | None, str | None]:
 
 def escalation_from_text(text: str) -> bool | None:
     lowered = text.lower()
-    if any(signal in lowered for signal in ("personal data", "customer pii", "customer records", "publicly readable", "public issue", "unauthorized access")):
+    if any(signal in lowered for signal in ("personal data", "customer pii", "customer records", "publicly readable", "public issue", "public ticket", "unauthorized access", "approved access list", "unencrypted", "without encryption", "another customer", "user email addresses", "external vendor")):
         return True
     if any(signal in lowered for signal in ("service is unavailable", "service is down", "503", "all upload requests fail", "endpoint is unavailable")):
         return True
-    if any(signal in lowered for signal in ("no timestamps", "no logs", "not known", "not recorded", "no tenant", "no order id", "no error message")):
+    if any(signal in lowered for signal in ("no timestamps", "no logs", "cannot provide logs", "nobody can provide logs", "not known", "not recorded", "no tenant", "no order id", "no error message")):
         return True
     if "alert fired" in lowered and ("cleared" in lowered or "returned below" in lowered):
         return False
